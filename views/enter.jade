@@ -1,0 +1,21 @@
+//
+   Created by omer on 29/05/2016.
+
+doctype html
+html(lang='en')
+    head
+        title Jade
+        link(href='public/stylesheets/enter.css', rel='stylesheet', type='text/css')
+    body.align
+        .site__container
+            .grid__container
+                form.form.form--login(action='/login', method='post')
+                    .form__field
+                        label.fontawesome-user(for='login__username')
+                            span.hidden Username
+                        input#login__username.form__input(type='text', placeholder='Name', required='')
+                    .form__field
+                        input(type='submit', value='Enter')
+                        span.fontawesome-arrow-right
+
+

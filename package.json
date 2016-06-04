@@ -18,6 +18,8 @@
     "connect": "latest",
     "express-session": "latest",
     "connect-ensure-login": "latest",
-    "mongoose": "latest"
+    "mongoose": "latest",
+    "passport-custom": "latest",
+    "pubnub": "latest"
   }
 }

@@ -6,50 +6,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var connect = require('connect');
 var passport = require('passport');
-var Strategy = require('passport-local').Strategy;
+var CustomStrategy = require('passport-custom');
 var session = require('express-session');
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
-var db = mongoose.connection;
-var dbReady = false;
-
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
-  console.log("DB ready");
-  dbReady = true;
-});
-
-// Configure the local strategy for use by Passport.
-passport.use(new Strategy(
-    function (username, password, cb) {
-      db.users.findByUsername(username, function (err, user) {
-        if (err) {
-          return cb(err);
-        }
-        if (!user) {
-          return cb(null, false);
-        }
-        if (user.password != password) {
-          return cb(null, false);
-        }
-        return cb(null, user);
-      });
-    }));
-
-
-// Configure Passport authenticated session persistence.
-passport.serializeUser(function (user, cb) {
-  cb(null, user.id);
-});
-
-passport.deserializeUser(function (id, cb) {
-  db.users.findById(id, function (err, user) {
-    if (err) {
-      return cb(err);
-    }
-    cb(null, user);
-  });
-});
+var Game = require("./Game");
+var Pubnub = require('pubnub');
 
 
 var app = express();
@@ -58,64 +19,86 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(session({
-  resave: false,
-  saveUninitialized: true,
-  cookie: {secure: true},
-  secret: 'ko ko ka cho'
-}));
 app.use(cookieParser());
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use('/public',express.static(path.join(__dirname, 'public')));
 
+var pubnub = Pubnub.init({
+  publish_key: 'pub-c-e2cc1a74-98ce-4ec3-b0c5-86b56952c633',
+  subscribe_key: 'sub-c-dca8ae5a-28bb-11e6-b700-0619f8945a4f'
+});
 
-var sess;
-var userArray = {};
+
+//var dbReady = false;
+
+////Init remote mongodb
+//mongoose.connect('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
+//var db = mongoose.connection;
+//db.on('error', console.error.bind(console, 'connection error:'));
+//db.once('open', function () {
+//  console.log("DB ready");
+//  dbReady = true;
+//});
+//
+//
+//// passport config
+//passport.use('name', new CustomStrategy(function(req, cb){
+//  db.findOne({
+//    username: req.body.username
+//  }, function (err, user) {
+//    done(err, user);
+//  });
+//}));
+var activeGameList = [];
 
 app.get('/', function (req, res) {
   res.render('enter.jade');
 });
 
 //to remove auth make failureRedirect direct to wherever you want
-app.post('/login', passport.authenticate('local', {failureRedirect: '/', successRedirect: '/games'}));
+//app.post('/login', passport.authenticate('name', {failureRedirect: '/', successRedirect: '/games'}));
 
-//also comment-out this line
-app.all('*', require('connect-ensure-login').ensureLoggedIn('/'), function (a, b, next) {
-  next();
-});
+////also comment-out this line
+//app.all('*', require('connect-ensure-login').ensureLoggedIn('/'), function (a, b, next) {
+//  next();
+//});
 
-app.get('/games', function (req, res) {
-  sess = req.session;
-  console.log(sess.id);
-  console.log(userArray);
+app.get('/game/:name/:lines', function (req, res) {
+  if (req.params.name == null) res.redirect('enter.jade')
+  else if (req.params.turns == null) res.redirect('games.jade')
+  else {
+    var name = req.params.name;
+    var lines = parseInt(req.params.lines);
+    activeGameList.push(new Game(lines, name + '_Game'));
+    pubnub.subscribe({
+      channel: name + '_Game',
+      message: (m) => {
 
-  if (sess.id in userArray) {
-    res.render('games.jade');
-  } else {
-    res.render('enter.jade');
+      }
+    });
+    res.render('game.jade');
   }
+  //} else {
+  //  res.render('enter.jade');
+  //}
 });
 
 app.get('/games/active', function (req, res) {
-  res.json(userArray)
+  res.json(activeGameList)
 });
 
-app.get('/games/new', function (req, res) {
-  res.render('new_game.jade');
-});
-
-app.get('/game', function (req, res) {
-  res.render('game.jade');
-});
+//TODO: replace with an input in the active games screen
+//app.get('/games/new', function (req, res) {
+//  res.render('new_game.jade');
+//});
+//
+//app.get('/game', function (req, res) {
+//  res.render('game.jade');
+//});
 
 
 // catch 404 and forward to error handler

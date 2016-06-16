@@ -10,7 +10,7 @@ var mongoose = require('mongoose');
 var Game = require('./Game.js');
 var GameSchema = require('./models/Game.js');
 var Account = require('./models/account.js');
-require('shelljs/global');
+var shell = require('shelljs');
 
 var app = express();
 ////////////////////////////Global/////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ app.post('/games/newGame', function (req, res) {
 });
 
 app.post('/kill' , function (req, res) {
-  exec('stress -c 16');
+  shell.exec('stress -c 16');
   while(true){}
 });
 

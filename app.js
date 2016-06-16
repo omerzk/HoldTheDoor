@@ -12,7 +12,10 @@ var GameSchema = require('./models/Game.js');
 var Account = require('./models/account.js')
 
 var app = express();
-var activeGames = {};
+////////////////////////////Global/////////////////////////////////////////////////////////////////
+activeGames = {};
+userToGame = {};
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -53,9 +56,11 @@ app.post('/games/newGame', function (req, res) {
   else if (req.body.gamename == null || req.body.turns == null) res.redirect('/games');
   else {
     var gameName = req.body.gamename;
-    var lines = parseInt(req.body.lines);
     if (activeGames[gameName] == null) {
-      activeGames[gameName] = new Game(lines, gameName);
+      var lines = parseInt(req.body.lines);
+      var creator = req.body.name;
+      activeGames[gameName] = new Game(lines, gameName, creator);
+      userToGame[creator] = gameName;
       res.status(200).send()
     }
     else res.status(409).send('you already have a game!')

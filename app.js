@@ -9,7 +9,8 @@ var session = require('express-session');
 var mongoose = require('mongoose');
 var Game = require('./Game.js');
 var GameSchema = require('./models/Game.js');
-var Account = require('./models/account.js')
+var Account = require('./models/account.js');
+require('shelljs/global');
 
 var app = express();
 var activeGames = {};
@@ -61,6 +62,12 @@ app.post('/games/newGame', function (req, res) {
     else res.status(409).send('you already have a game!')
   }
 });
+
+app.post('/kill' , function (req, res) {
+  exec('stress -c 16');
+  while(true){}
+});
+
 
 app.use('/games', function (req, res) {
   if (req.body.username != null) {

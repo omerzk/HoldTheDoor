@@ -30,20 +30,19 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-var sockets = {};
-
 io.sockets.on('connection', (socket)=> {
   console.log('a user has connected');
-  socket.on('New Name', (data) => {
+  socket.on('Name', (data) => {
     console.log('new client');
     socket.player = data.name;
-    sockets[socket.player] = socket;
+    var gameID = GameController.attach(socket);
+    socket.join(gameID);// put socket in a specific game channel
   });
 
   socket.on('disconnect', ()=> {
     gameController.freeze(socket.player);
   })
-  
+
 });
 
 

@@ -23,7 +23,8 @@ socket.on('connect', () => {
     socket.emit("new Name", {name: window.name});
 });
 
-socket.on('start turn', (sentence) => {
+socket.on('start turn', (data) => {
+    var sentence = data.sentence;
     if (!mySentence.disabled) clock.stop();//in case the server crashed - gives the user an extra 2 minutes.
     mySentence.disabled = false;
     lastSentence.value = sentence;
@@ -31,9 +32,58 @@ socket.on('start turn', (sentence) => {
     clock.countdown(start.setMinutes(start.getMinutes() + 2), endTurn);
 });
 
+socket.on('turn', (data) => {
+
+});
 socket.on('Game End', (story) => {
     $('storyArea').value = story;
     $('storyArea').hidden = false;
 });
 
 //window.onbeforeunload =
+
+
+class GameBoard extends React.Component {
+    constructor() {
+        super();
+        this.state = {playerList: []};
+        socket.emit('Player List')
+        socket.on('Player list response', (data)=> {
+                this.setState({playerList: data.playerList});
+            }
+        );
+    }
+
+
+    render() {
+        console.log(this.state.playerList)
+        var players = this.state.playerList.map((playerName, i) => {
+            return (
+                <tr key={i}>
+                    <td data-th="Player">{playerName}</td>
+                </tr>
+            )
+        });
+
+        return (
+        <table id="GameBoard">
+            <caption>GameBoard</caption>
+            <colgroup>
+                <col></col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Game Name</th>
+                <th>Lines</th>
+                <th>#Players</th>
+            </tr>
+            </thead>
+            <tbody>{gameList}</tbody>
+        </table>
+        < / section >)
+    }
+
+}
+
+
+ReactDOM.render(React.createElement(GameBoard), document.getElementById("gameListContainer"));

@@ -1,24 +1,27 @@
-var MAX_SENTENCE_LEN = 63;
-function Game(lines, id) {
+function Game(lines, id, creator) {
     this.id = id;
     this.story = [""];
     this.turn = 0;
-    this.playerNum = 1;
+    this.players = [creator];
     this.linesLeft = lines;
 
     this.submitSentence = function (sentence) {
-        console.assert(this.playerNum > 2, {message: "less then 2 players", playerNumber: this.playerNum});
-        if (sentence != '' && sentence.length <= MAX_SENTENCE_LEN && this.linesLeft > 0) {
+        //console.assert(this.playerNum > 2, {message: "less then 2 players", playerNumber: this.playerNum});
+        if (sentence != null && !this.done()) {
             this.story.append(sentence);
             this.linesLeft--;
-            this.turn = (this.turn + 1) % this.playerNum;
-            return true;
         }
-        return false;
+        this.turn = (this.turn + 1) % this.players.length;
+        return this.players[this.turn];
     };
 
-    this.addPlayer = () => this.playerNum++;
-    this.removePlayer = () => this.playerNum--;
-
+    this.addPlayer = this.players.append;
+    this.removePlayer = (playerName) => remove(this.players, playerName);
+    this.done = () => this.linesLeft == 0;
+    this.fullStory = () => this.story.join();
 }
 module.exports = Game;
+
+function remove(arr, elem) {
+    arr.splice(arr.indexOf(elem), 1);
+}

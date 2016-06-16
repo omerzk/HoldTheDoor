@@ -3,8 +3,8 @@
  */
 function Clock(id) {
     var clock = $(id);
-    var minutesSpan = clock.querySelector('.minutes');
-    var secondsSpan = clock.querySelector('.seconds');
+    var minutesSpan = $('.minutes');
+    var secondsSpan = $('.seconds');
 
     var timeinterval, endtime, callback;
 

@@ -62,6 +62,7 @@ app.post('/games/newGame', function (req, res) {
       var creator = req.body.name;
       activeGames[gameName] = new Game(lines, gameName, creator);
       userToGame[creator] = gameName;
+      console.log(userToGame)
       res.status(200).send()
     }
     else res.status(409).send('you already have a game!')

@@ -6,9 +6,10 @@
 
 var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
-var https = require('https');
+var https = require('http');
 var fs = require('fs');
-
+var wtf = require("../GameController");
+var GameController = new wtf.g();
 /**
  * Get port from environment and store in Express.
  */
@@ -18,16 +19,16 @@ app.set('port', port);
 
 // Create options for encryption
 var pathToCerts = '/etc/letsencrypt/live/sentencegameomer.tk';
-var options = {
-  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
-  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
-  ca: fs.readFileSync(pathToCerts + '/chain.pem')
-}
+//var options = {
+//  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
+//  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
+//  ca: fs.readFileSync(pathToCerts + '/chain.pem')
+//}
 
 /**
  * Create HTTPs server.
  */
-var server = https.createServer(options, app);
+var server = https.createServer(app);
 var io = require('socket.io')(server);
 
 /**
@@ -40,15 +41,15 @@ server.on('listening', onListening);
 
 io.sockets.on('connection', (socket) => {
   console.log('a user has connected');
-  socket.on('Name', (data) => {
-    console.log('new client');
+  socket.on('HELLO', (data) => {
+    console.log('new client' + data.name);
     socket.player = data.name;
     var gameID = GameController.attach(socket);
     socket.join(gameID);// put socket in a specific game channel
   });
 
   socket.on('disconnect', ()=> {
-    gameController.freeze(socket.player);
+    GameController.freeze(socket.player);
   })
 
 });

@@ -3,10 +3,10 @@
  */
 var serverAddr = 'http://localhost:3000';
 var socket = io.connect(serverAddr);
-
 var mySentence = $('mySentence');
 var clock = new Clock();
 var lastSentence = $('lastSentence');
+var curPlayer = null;
 
 function endTurn(sentence) {
     mySentence.disabled = true;
@@ -15,12 +15,13 @@ function endTurn(sentence) {
 }
 
 function submitSentence(evt) {
+    console.log("this place")
     evt.preventDefault();
     endTurn(mySentence.value);
 }
 
 socket.on('connect', () => {
-    socket.emit("new Name", {name: window.name});
+    socket.emit("HELLO", {name: window.name});
 });
 
 socket.on('start turn', (data) => {
@@ -33,8 +34,9 @@ socket.on('start turn', (data) => {
 });
 
 socket.on('turn', (data) => {
-
+    curPlayer = data.nextPlayer;
 });
+
 socket.on('Game End', (story) => {
     $('storyArea').value = story;
     $('storyArea').hidden = false;
@@ -43,13 +45,13 @@ socket.on('Game End', (story) => {
 //window.onbeforeunload =
 
 
-class GameBoard extends React.Component {
+class PlayerList extends React.Component {
     constructor() {
         super();
-        this.state = {playerList: []};
-        socket.emit('Player List')
-        socket.on('Player list response', (data)=> {
-                this.setState({playerList: data.playerList});
+        this.state = {playerList: [], curPlayer: null};
+        socket.emit('Game Data');
+        socket.on('player List', (data)=> {
+            this.setState({playerList: data.playerList, curPlayer: data.curPlayer});
             }
         );
     }
@@ -58,32 +60,32 @@ class GameBoard extends React.Component {
     render() {
         console.log(this.state.playerList)
         var players = this.state.playerList.map((playerName, i) => {
+            var style = curPlayer === playerName ? {backgroundColor: '#c37dcc'} : {};
             return (
-                <tr key={i}>
+                <tr key={i} style={style}>
                     <td data-th="Player">{playerName}</td>
                 </tr>
             )
         });
 
         return (
-        <table id="GameBoard">
-            <caption>GameBoard</caption>
-            <colgroup>
-                <col></col>
-            </colgroup>
-            <thead>
-            <tr>
-                <th>Game Name</th>
-                <th>Lines</th>
-                <th>#Players</th>
-            </tr>
-            </thead>
-            <tbody>{gameList}</tbody>
-        </table>
-        < / section >)
+            <section>
+                <table id="GameBoard">
+                    <caption>GameBoard</caption>
+                    <colgroup>
+                        <col>Player</col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Player Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>{players}</tbody>
+                </table>
+            </section >)
     }
 
 }
 
 
-ReactDOM.render(React.createElement(GameBoard), document.getElementById("gameListContainer"));
+ReactDOM.render(React.createElement(PlayerList), document.getElementById("playerListContainer"));

@@ -1,14 +1,17 @@
 /**
  * Created by omer on 16/06/2016.
  */
-function GameController() {
-    function attach(socket) {
+exports.g = function GameController() {
+    this.attach = (socket)=> {
         var game = activeGames[userToGame[socket.player]];
+        console.log(userToGame);
+        console.log("player" + socket.player)
+        console.log(game);
         game.addPlayer(socket.player);
         return game.id;
     }
 
-    function advance(socket, sentence) {
+    this.advance = (socket, sentence) => {
         var game = activeGames[userToGame[socket.player]];
         var nextPlayer = game.submitSentence(sentence);
         var event, data;
@@ -22,4 +25,8 @@ function GameController() {
         }
         return
     }
-}
+
+    this.freeze = (socket) => {
+        return null;
+    }
+};

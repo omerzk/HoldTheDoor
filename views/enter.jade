@@ -12,7 +12,10 @@ html(lang='en')
                 script.
                     function saveName(evt) {
                         inp = document.getElementById("login__username");
-                        window.name = inp.val();
+                        console.log(inp.value)
+                        sessionStorage.setItem("name", inp.value);
+                        console.log(sessionStorage);
+                        console.log("crap")
                     }
                 form.form.form--login(action='/games', method='post')
                     .form__field

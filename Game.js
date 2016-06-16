@@ -15,7 +15,7 @@ function Game(lines, id, creator) {
         return this.players[this.turn];
     };
 
-    this.addPlayer = this.players.append;
+    this.addPlayer = (player)=>this.players.push(player);
     this.removePlayer = (playerName) => remove(this.players, playerName);
     this.done = () => this.linesLeft == 0;
     this.fullStory = () => this.story.join();

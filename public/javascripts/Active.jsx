@@ -29,11 +29,11 @@ class GameBoard extends React.Component {
         evt.preventDefault();
         var numTurns = $('input')[1].value;
         var GameName = $('input')[0].value;
-        console.log(numTurns)
-        var that = this;
+        var name = sessionStorage.getItem('name');
+        console.log(sessionStorage)
         $.ajax({
             url: '/games/newGame',
-            data: ({turns: numTurns, name: window.name, gamename: GameName}),
+            data: ({turns: numTurns, name: name, gamename: GameName}),
             dataType: "text",
             method: "POST",
             success: (response) => {
@@ -81,7 +81,6 @@ class GameBoard extends React.Component {
                 </tr>
             )
         });
-
         return (
             <section>
                 <div className="side-panel a">

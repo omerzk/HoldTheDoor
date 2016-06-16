@@ -6,6 +6,7 @@ html
     head
         title Sentence Game Forever And Ever.com
         link(rel='stylesheet', type='text/css', href='public/stylesheets/game.css')
+        link(rel='stylesheet', type='text/css', href='public/stylesheets/clock.css')
         script(src="https://fb.me/react-0.14.7.js")
         script(src="https://fb.me/react-dom-0.14.7.js")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js")
@@ -24,5 +25,9 @@ html
         #gamediv
             input#lastsentence(type='text', disabled='')
             form(name="sentence", onsubmit='submitSentence')
-            input#mySentence(type='text', required='')
+                input#mySentence(type='text', required='')
+                input(type="submit", value="Submit")
+
         textarea#storyArea(disabled='' hidden='true')
+        #playerListContainer
+        script(type="text/babel" src='public/javascripts/game.jsx')

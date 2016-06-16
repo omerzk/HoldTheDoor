@@ -20,6 +20,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+var io = require('socket.io')(server);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -28,6 +29,23 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+var sockets = {};
+
+io.sockets.on('connection', (socket)=> {
+  console.log('a user has connected');
+  socket.on('New Name', (data) => {
+    console.log('new client');
+    socket.player = data.name;
+    sockets[socket.player] = socket;
+  });
+
+  socket.on('disconnect', ()=> {
+    gameController.freeze(socket.player);
+  })
+  
+});
+
 
 /**
  * Normalize a port into a number, string, or false.

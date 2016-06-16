@@ -4,5 +4,8 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="HoldTheDoor node_modules" level="project" />
+    <orderEntry type="library" name="pubnub-dev" level="application" />
+    <orderEntry type="library" name="react-0.14.7" level="application" />
+    <orderEntry type="library" name="react-dom-0.14.7" level="application" />
   </component>
 </module>

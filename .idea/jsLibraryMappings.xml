@@ -2,6 +2,7 @@
 <project version="4">
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$" libraries="{HoldTheDoor node_modules}" />
+    <file url="PROJECT" libraries="{pubnub-dev, react-0.14.7, react-dom-0.14.7}" />
     <includedPredefinedLibrary name="ECMAScript 6" />
     <includedPredefinedLibrary name="Node.js Core" />
   </component>

@@ -20,6 +20,7 @@
     "connect-ensure-login": "latest",
     "mongoose": "latest",
     "passport-custom": "latest",
-    "pubnub": "latest"
+    "pubnub": "latest",
+    "socket.io": "latest"
   }
 }

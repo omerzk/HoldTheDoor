@@ -5,7 +5,8 @@ var Game = new Schema({
     id: Number,
     turnsLeft: Number,
     curTurn: Number, // update rule: curTurn++ % players.length()
-    timer: Number// number in 0 - 120
+    timer: Number,// number in 0 - 120
+    players: [String]
 
 
 });

@@ -1,16 +1,12 @@
 var MAX_SENTENCE_LEN = 63;
+function Game(lines, id) {
+    this.id = id;
+    this.story = [""];
+    this.turn = 0;
+    this.playerNum = 1;
+    this.linesLeft = lines;
 
-module.exports = class Game {
-
-    constructor(lines, id) {
-        this.id = id;
-        this.story = [""];
-        this.turn = 0;
-        this.playerNum = 1;
-        this.linesLeft = lines;
-    }
-
-    submitSentence(sentence) {
+    this.submitSentence = function (sentence) {
         console.assert(this.playerNum > 2, {message: "less then 2 players", playerNumber: this.playerNum});
         if (sentence != '' && sentence.length <= MAX_SENTENCE_LEN && this.linesLeft > 0) {
             this.story.append(sentence);
@@ -19,16 +15,10 @@ module.exports = class Game {
             return true;
         }
         return false;
-    }
+    };
 
-    get fullStory() {
-        if (this.linesLeft == 0)
-            return this.story.join('\n');
-    }
-
-    get lastSentence() {
-        return this.story[this.story.length - 1];
-    }
+    this.addPlayer = () => this.playerNum++;
+    this.removePlayer = () => this.playerNum--;
 
 }
-
+module.exports = Game;

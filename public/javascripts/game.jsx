@@ -7,11 +7,13 @@ var mySentence = $('mySentence');
 var clock = new Clock();
 var lastSentence = $('lastSentence');
 var curPlayer = null;
+var gameName = sessionStorage.getItem('gameName');
+var playerName = sessionStorage.getItem('name');
 
 function endTurn(sentence) {
     mySentence.disabled = true;
     mySentence.value = '';
-    socket.emit('end Turn', {input: sentence});
+    socket.emit('end Turn', {input: sentence, game: gameName});
 }
 
 function submitSentence(evt) {
@@ -21,7 +23,11 @@ function submitSentence(evt) {
 }
 
 socket.on('connect', () => {
-    socket.emit("HELLO", {name: window.name});
+    socket.emit("HELLO", {name: playerName, game: gameName});
+});
+
+socket.on('reconnect', () => {
+    socket.emit("HELLO", {name: playerName, game: gameName});
 });
 
 socket.on('start turn', (data) => {
@@ -49,7 +55,7 @@ class PlayerList extends React.Component {
     constructor() {
         super();
         this.state = {playerList: [], curPlayer: null};
-        socket.emit('Game Data');
+        socket.emit('Game Data', {game: gameName});
         socket.on('player List', (data)=> {
             this.setState({playerList: data.playerList, curPlayer: data.curPlayer});
             }

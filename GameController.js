@@ -3,16 +3,14 @@
  */
 exports.g = function GameController() {
     this.attach = (socket)=> {
-        var game = activeGames[userToGame[socket.player]];
-        console.log(userToGame);
-        console.log("player" + socket.player)
+        var game = activeGames[socket.gameName];
         console.log(game);
         game.addPlayer(socket.player);
         return game.id;
     }
 
     this.advance = (socket, sentence) => {
-        var game = activeGames[userToGame[socket.player]];
+        var game = activeGames[socket.gameName;
         var nextPlayer = game.submitSentence(sentence);
         var event, data;
         if (game.done()) {
@@ -23,7 +21,7 @@ exports.g = function GameController() {
             event = "turn";
             data = {player: nextPlayer};
         }
-        return
+        return {}
     }
 
     this.freeze = (socket) => {

@@ -15,7 +15,6 @@ var shell = require('shelljs');
 var app = express();
 ////////////////////////////Global/////////////////////////////////////////////////////////////////
 activeGames = {};
-userToGame = {};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,7 +37,7 @@ var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-  console.log("DB ready");
+  log("DB ready");
   dbReady = true;
 });
 
@@ -48,21 +47,20 @@ app.get('/', function (req, res) {
 });
 
 app.get('/games/active', function (req, res) {
-  console.log("getting list");
+  log("getting list");
   res.json(activeGames);
 });
 
 app.post('/games/newGame', function (req, res) {
   if (req.body.name == null) res.redirect('/');
-  else if (req.body.gamename == null || req.body.turns == null) res.redirect('/games');
+  //else if (req.body.gamename == null || req.body.turns == null) res.redirect('/games');
   else {
     var gameName = req.body.gamename;
     if (activeGames[gameName] == null) {
-      var lines = parseInt(req.body.lines);
+      var lines = parseInt(req.body.turns);
       var creator = req.body.name;
+      console.log([lines, gameName, creator])
       activeGames[gameName] = new Game(lines, gameName, creator);
-      userToGame[creator] = gameName;
-      console.log(userToGame)
       res.status(200).send()
     }
     else res.status(409).send('you already have a game!')
@@ -75,14 +73,9 @@ app.post('/kill' , function (req, res) {
 });
 
 
-app.use('/games', function (req, res) {
-  if (req.body.username != null) {
-    res.render('ActiveGames.jade');
-  }
-  else {
-    console.log('redirect')
-    res.redirect('/')
-  }
+app.post('/games', function (req, res) {
+  //TODO: why is this called every time newgame is called?
+  res.render('ActiveGames.jade');
 });
 
 app.get('/game', function (req, res) {
@@ -98,21 +91,6 @@ app.post('/joinGame', function joinGame(req, res) {
   }
 });
 
-
-  //} else {
-  //  res.render('enter.jade');
-  //}
-
-
-
-//TODO: replace with an input in the active games screen
-//app.get('/games/new', function (req, res) {
-//  res.render('new_game.jade');
-//});
-//
-//app.get('/game', function (req, res) {
-//  res.render('game.jade');
-//});
 
 
 // catch 404 and forward to error handler

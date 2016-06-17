@@ -24,16 +24,15 @@ class GameBoard extends React.Component {
 
 
     newGame(evt) {
-        //TODO:add animation?
-        //TODO: add UserID... needed to create an ad-hoc connection.
         evt.preventDefault();
-        var numTurns = $('input')[1].value;
-        var GameName = $('input')[0].value;
+        var numTurns = $('#Turns').val();
+        var gameName = $('#GameName').val();
         var name = sessionStorage.getItem('name');
-        console.log(sessionStorage)
+        sessionStorage.setItem("gameName", gameName);
+        console.log({turns: numTurns, name: name, gamename: gameName});
         $.ajax({
             url: '/games/newGame',
-            data: ({turns: numTurns, name: name, gamename: GameName}),
+            data: ({turns: numTurns, name: name, gamename: gameName}),
             dataType: "text",
             method: "POST",
             success: (response) => {
@@ -46,10 +45,14 @@ class GameBoard extends React.Component {
     }
 
     joinGame(evt) {
-        var that = this;
+        evt.preventDefault();
+        var name = sessionStorage.getItem('name');
+        console.log('join game');
+        console.log(this);
+        sessionStorage.setItem("gameName", gameName);
         $.ajax({
             url: '/games/newGame',
-            data: ({turns: numTurns, name: window.name, gamename: GameName}),
+            data: ({name: name, gamename: GameName}),
             dataType: "text",
             method: "POST",
             success: (response) => {
@@ -74,10 +77,10 @@ class GameBoard extends React.Component {
         console.log(this.state.activeGames)
         var gameList = Object.keys(this.state.activeGames).map((key, i) => {
             return (
-                <tr key={i} onclick={this.joinGame(key)}>
+                <tr key={i} onclick={this.joinGame}>
                     <td data-th="Game Name">{this.state.activeGames[key].id}</td>
                     <td data-th="Lines">{this.state.activeGames[key].linesLeft}</td>
-                    <td data-th="#Players">{this.state.activeGames[key].playerNum}</td>
+                    <td data-th="#Players">{this.state.activeGames[key].players.length}</td>
                 </tr>
             )
         });

@@ -5,6 +5,7 @@ var serverAddr = 'http://localhost:3000';
 var socket = io.connect(serverAddr);
 var mySentence = $('#mySentence');
 var clock = new Clock();
+
 var lastSentence = $('#lastSentence');
 var curPlayer = null;
 var gameName = sessionStorage.getItem('gameName');
@@ -42,6 +43,7 @@ socket.on('start turn', (data) => {
     console.log(lastSentence.val())
     lastSentence.val(sentence);
     var start = new Date();
+    console.log()
     clock.countdown(start.setMinutes(start.getMinutes() + 2), endTurn);
 });
 

@@ -1,3 +1,5 @@
+var GameModel = require('./models/Game.js');
+
 function Game(lines, id) {
     this.id = id;
     var story = [""];

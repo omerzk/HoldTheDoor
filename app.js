@@ -62,7 +62,6 @@ app.post('/games/newGame', function (req, res) {
       var lines = parseInt(req.body.turns);
       var creator = req.body.name;
       activeGames[gameName] = new Game(lines, gameName, creator);
-      userToGame[creator] = gameName;
       var mongoGame = new GameModel({
         id: gameName,
         turnsLeft: lines,

@@ -18,12 +18,12 @@ function Game(lines, id) {
         else {
             turn = (turn + 1) % players.length;
             // Find and update the game, turns left and story
-            GameModel.find({ id: this.id }, function(err, gameFound) {
+            GameModel.find({id: this.id}, function (err, gameFound) {
                 if (err) throw err;
                 gameFound.turnsLeft = linesLeft;
                 gameFound.curTurn = turn;
                 gameFound.story = story;
-                gameFound.save(function(err) {
+                gameFound.save(function (err) {
                     if (err) throw err;
                     console.log('Game successfully updated!');
                 });

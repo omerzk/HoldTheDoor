@@ -68,9 +68,9 @@ app.post('/games/newGame', function (req, res) {
         curTurn: 0,
         players: [creator],
         story: []
-      }).save(function(err, mongoGame) {
-            if (err) return console.error(err);
-          });
+      }).save(function (err, mongoGame) {
+        if (err) return console.error(err);
+      });
 
       console.log([lines, gameName]);
       activeGames[gameName] = new Game(lines, gameName);
@@ -88,7 +88,7 @@ app.post('/kill' , function (req, res) {
 
 app.post('/games', function (req, res) {
   //TODO: why is this called every time newgame is called?
-    res.render('ActiveGames.jade');
+  res.render('ActiveGames.jade');
 });
 
 app.get('/game', function (req, res) {

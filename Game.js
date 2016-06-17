@@ -1,24 +1,44 @@
-function Game(lines, id, creator) {
+function Game(lines, id) {
     this.id = id;
-    this.story = [""];
-    this.turn = 0;
-    this.players = [creator];
-    this.linesLeft = lines;
+    var story = [""];
+    var turn = 0;
+    var players = [];
+    var linesLeft = lines;
+    var turnDuration = 120 * 1000 * 3;
+    var flow = setTimeout(advance, turnDuration);
+    
+    function advance() {
+        if (done()) {
+            delete activeGames[this.id]
+            io.sockets.in(this.id).emit('Game End', {story: fullStory()});
+        }
+        else {
+            turn = (turn + 1) % players.length;
+            io.sockets.in(this.id).emit("turn", {turn: turn});
+            sockets[players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
+            flow = setTimeout(advance, turnDuration);
+        }
+    }
 
     this.submitSentence = function (sentence) {
         //console.assert(this.playerNum > 2, {message: "less then 2 players", playerNumber: this.playerNum});
+        clearTimeout(flow);
         if (sentence != null && !this.done()) {
-            this.story.append(sentence);
-            this.linesLeft--;
+            story.append(sentence);
+            linesLeft--;
         }
-        this.turn = (this.turn + 1) % this.players.length;
-        return this.players[this.turn];
+        advance()
     };
 
-    this.addPlayer = (player)=>this.players.push(player);
+
+    this.addPlayer = (player)=> players.push(player);
     this.removePlayer = (playerName) => remove(this.players, playerName);
-    this.done = () => this.linesLeft == 0;
-    this.fullStory = () => this.story.join();
+    function done() {
+        return this.linesLeft == 0;
+    }
+
+    var fullStory = () => this.story.join();
+
 }
 module.exports = Game;
 

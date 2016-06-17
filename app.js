@@ -8,7 +8,7 @@ var connect = require('connect');
 var session = require('express-session');
 var mongoose = require('mongoose');
 var Game = require('./Game.js');
-var GameSchema = require('./models/Game.js');
+var GameModel = require('./models/Game.js');
 var Account = require('./models/account.js');
 var shell = require('shelljs');
 
@@ -61,7 +61,19 @@ app.post('/games/newGame', function (req, res) {
     if (activeGames[gameName] == null) {
       var lines = parseInt(req.body.turns);
       var creator = req.body.name;
-      console.log([lines, gameName])
+      activeGames[gameName] = new Game(lines, gameName, creator);
+      userToGame[creator] = gameName;
+      var mongoGame = new GameModel({
+        id: gameName,
+        turnsLeft: lines,
+        curTurn: 0,
+        players: [creator],
+        story: []
+      }).save(function(err, mongoGame) {
+            if (err) return console.error(err);
+          });
+
+      console.log([lines, gameName]);
       activeGames[gameName] = new Game(lines, gameName);
       res.status(200).send()
     }
@@ -77,7 +89,7 @@ app.post('/kill' , function (req, res) {
 
 app.post('/games', function (req, res) {
   //TODO: why is this called every time newgame is called?
-  res.render('ActiveGames.jade');
+    res.render('ActiveGames.jade');
 });
 
 app.get('/game', function (req, res) {
@@ -88,7 +100,7 @@ app.get('/game', function (req, res) {
 app.post('/joinGame', function joinGame(req, res) {
   if (req.body.gameName == null || activeGames[req.body.gameName] == null) res.redirect('/games');
   else {
-    activeGames[req.body.gameName].playerNum++;
+    activeGames[req.body.gameName].players.push(req.body.name);
     res.statusCode(200).send();
   }
 });

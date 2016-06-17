@@ -15,6 +15,7 @@ class GameBoard extends React.Component {
             'Content-type': 'application/json',
             method: "GET",
             success: (res) => {
+                console.log(res);
                 that.setState({activeGames: res});
             },
             error: GameBoard.requestError

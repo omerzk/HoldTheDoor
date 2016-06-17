@@ -1,6 +1,3 @@
-var GameModel = require('./models/Game.js');
-
-
 function Game(lines, id) {
     this.id = id;
     var story = [""];
@@ -14,15 +11,6 @@ function Game(lines, id) {
         if (done()) {
             delete activeGames[this.id]
             io.sockets.in(this.id).emit('Game End', {story: fullStory()});
-            // Find and delete the game from the db
-            GameModel.find({ id: this.id }, function(err, gameFound) {
-                if (err) throw err;
-                // object of the user
-                gameFound.remove(function(err) {
-                    if (err) throw err;
-                    console.log('Game successfully deleted!');
-                });
-            });
         }
         else {
             turn = (turn + 1) % players.length;

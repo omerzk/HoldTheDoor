@@ -53,7 +53,7 @@ io.sockets.on('connection', (socket) => {
     sockets[socket.player] = socket;
   });
 
-  socket.on('submit', data => activeGame[socket.game].submitSentence(data.sentence));
+  socket.on('submit', data => activeGames[socket.game].submitSentence(data.sentence));
 
 });
 

@@ -3,24 +3,29 @@
  */
 var serverAddr = 'http://localhost:3000';
 var socket = io.connect(serverAddr);
-var mySentence = $('mySentence');
+var mySentence = $('#mySentence');
 var clock = new Clock();
-var lastSentence = $('lastSentence');
+var lastSentence = $('#lastSentence');
 var curPlayer = null;
 var gameName = sessionStorage.getItem('gameName');
 var playerName = sessionStorage.getItem('name');
 
+$(document).ready(()=> {
+    $('#inputForm').submit(function submitSentence(evt) {
+        evt.preventDefault();
+        console.log("this place");
+        endTurn(mySentence.val());
+    })
+});
+
 function endTurn(sentence) {
+    console.log("endTurn" + sentence);
     mySentence.disabled = true;
-    mySentence.value = '';
-    socket.emit('end Turn', {input: sentence, game: gameName});
+    mySentence.val('');
+    if (sentence !== null)socket.emit('submit', {sentence: sentence});
 }
 
-function submitSentence(evt) {
-    console.log("this place")
-    evt.preventDefault();
-    endTurn(mySentence.value);
-}
+
 
 socket.on('connect', () => {
     socket.emit("HELLO", {name: playerName, game: gameName});
@@ -33,8 +38,9 @@ socket.on('reconnect', () => {
 socket.on('start turn', (data) => {
     var sentence = data.sentence;
     if (!mySentence.disabled) clock.stop();//in case the server crashed - gives the user an extra 2 minutes.
-    mySentence.disabled = false;
-    lastSentence.value = sentence;
+    mySentence.disabled = false
+    console.log(lastSentence.val())
+    lastSentence.val(sentence);
     var start = new Date();
     clock.countdown(start.setMinutes(start.getMinutes() + 2), endTurn);
 });

@@ -23,8 +23,8 @@ function Game(lines, id) {
     this.submitSentence = function (sentence) {
         //console.assert(this.playerNum > 2, {message: "less then 2 players", playerNumber: this.playerNum});
         clearTimeout(flow);
-        if (sentence != null && !this.done()) {
-            story.append(sentence);
+        if (sentence != null && !done()) {
+            story.push(sentence);
             this.linesLeft--;
         }
         advance()

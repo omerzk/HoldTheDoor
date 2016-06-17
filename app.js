@@ -41,6 +41,15 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
   log("DB ready");
   dbReady = true;
+  GameModel.find({},function(err, mongoGames) {
+    for (i = 0; i < mongoGames.length; i++) {
+      var gameName = mongoGames[i].id;
+      var newGame = new Game(mongoGames[i].turnsLeft, mongoGames[i].id);
+      newGame.updatefromDB(mongoGames[i]);
+      activeGames[gameName] = newGame;
+    }
+    console.log(activeGames)
+  });
 });
 
 
@@ -62,15 +71,15 @@ app.post('/games/newGame', function (req, res) {
       var lines = parseInt(req.body.turns);
       var creator = req.body.name;
       activeGames[gameName] = new Game(lines, gameName, creator);
-      //var mongoGame = new GameModel({
-      //  id: gameName,
-      //  turnsLeft: lines,
-      //  curTurn: 0,
-      //  players: [creator],
-      //  story: []
-      //}).save(function (err, mongoGame) {
-      //  if (err) return console.error(err);
-      //});
+      var mongoGame = new GameModel({
+        id: gameName,
+        turnsLeft: lines,
+        curTurn: 0,
+        players: [creator],
+        story: []
+      }).save(function (err, mongoGame) {
+        if (err) return console.error(err);
+      });
 
       console.log([lines, gameName]);
       activeGames[gameName] = new Game(lines, gameName);
@@ -99,8 +108,16 @@ app.get('/game', function (req, res) {
 app.post('/joinGame', function joinGame(req, res) {
   if (req.body.gameName == null || activeGames[req.body.gameName] == null) res.redirect('/games');
   else {
-    activeGames[req.body.gameName].players.push(req.body.name);
-    res.statusCode(200).send();
+      activeGames[req.body.gameName].players.push(req.body.name);
+      GameModel.findOne({ id: req.body.gamename }, function(err, gameFound) {
+        if (err) throw err;
+        gameFound.players.push(req.body.name);
+        gameFound.save(function (err) {
+          if (err) throw err;
+          console.log('Game successfully added a player!');
+        });
+      });
+      res.statusCode(200).send();
   }
 });
 

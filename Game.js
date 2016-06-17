@@ -1,4 +1,5 @@
 var GameModel = require('./models/Game.js');
+//var mongoose = require('mongoose');
 
 function Game(lines, id) {
     this.id = id;
@@ -10,24 +11,42 @@ function Game(lines, id) {
     var flow = setTimeout(advance, turnDuration);
     var that = this;
 
+    this.updatefromDB = function (mongoGame) {
+        this.id = mongoGame.id;
+        story = mongoGame.story;
+        turn = mongoGame.curTurn;
+        players = mongoGame.players;
+        linesLeft = mongoGame.turnsLeft;
+    };
+
     function advance() {
         if (done()) {
-            delete activeGames[that.id]
-            io.sockets.in(that.id).emit('Game End', {story: fullStory()});
+            delete activeGames[that.id];
+            // Find and delete this Game from the DB
+            GameModel.findOne({ id: that.id }, function(err, gameFound) {
+                if (err) throw err;
+                gameFound.remove(function(err) {
+                    if (err) throw err;
+                    console.log('Game successfully deleted!');
+                });
+            });
+            io.sockets.in(this.id).emit('Game End', {story: fullStory()});
         }
         else {
             turn = (turn + 1) % that.players.length;
             // Find and update the game, turns left and story
-            //GameModel.find({id: that.id}, function (err, gameFound) {
-            //    if (err) throw err;
-            //    gameFound.turnsLeft = that.linesLeft;
-            //    gameFound.curTurn = turn;
-            //    gameFound.story = story;
-            //    gameFound.save(function (err) {
-            //        if (err) throw err;
-            //        console.log('Game successfully updated!');
-            //    });
-            //});
+            console.log('id: ' + that.id);
+            GameModel.findOne({id: that.id}, function (err, gameFound) {
+                if (err) throw err;
+                console.log(gameFound);
+                gameFound.turnsLeft = that.linesLeft;
+                gameFound.curTurn = turn;
+                gameFound.story = story;
+                gameFound.save(function (err) {
+                    if (err) throw err;
+                    console.log('Game successfully updated!');
+                });
+            });
             io.sockets.in(that.id).emit("turn", {turn: turn});
             sockets[that.players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
             flow = setTimeout(advance, turnDuration);

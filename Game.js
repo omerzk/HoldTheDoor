@@ -2,8 +2,8 @@ function Game(lines, id) {
     this.id = id;
     var story = [""];
     var turn = 0;
-    var players = [];
-    var linesLeft = lines;
+    this.players = [];
+    this.linesLeft = lines;
     var turnDuration = 120 * 1000 * 3;
     var flow = setTimeout(advance, turnDuration);
 
@@ -13,9 +13,9 @@ function Game(lines, id) {
             io.sockets.in(this.id).emit('Game End', {story: fullStory()});
         }
         else {
-            turn = (turn + 1) % players.length;
+            turn = (turn + 1) % this.players.length;
             io.sockets.in(this.id).emit("turn", {turn: turn});
-            sockets[players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
+            sockets[this.players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
             flow = setTimeout(advance, turnDuration);
         }
     }
@@ -25,13 +25,13 @@ function Game(lines, id) {
         clearTimeout(flow);
         if (sentence != null && !this.done()) {
             story.append(sentence);
-            linesLeft--;
+            this.linesLeft--;
         }
         advance()
     };
 
 
-    this.addPlayer = (player)=> players.push(player);
+    this.addPlayer = (player)=> this.players.push(player);
     this.removePlayer = (playerName) => remove(this.players, playerName);
     function done() {
         return this.linesLeft == 0;

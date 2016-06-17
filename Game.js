@@ -1,3 +1,5 @@
+var GameModel = require('./models/Game.js');
+
 function Game(lines, id) {
     this.id = id;
     var story = [""];
@@ -14,9 +16,20 @@ function Game(lines, id) {
             io.sockets.in(that.id).emit('Game End', {story: fullStory()});
         }
         else {
-            turn = (turn + 1) % that.players.length;
-            io.sockets.in(that.id).emit("turn", {turn: turn});
-            sockets[that.players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
+            turn = (turn + 1) % players.length;
+            // Find and update the game, turns left and story
+            GameModel.find({ id: this.id }, function(err, gameFound) {
+                if (err) throw err;
+                gameFound.turnsLeft = linesLeft;
+                gameFound.curTurn = turn;
+                gameFound.story = story;
+                gameFound.save(function(err) {
+                    if (err) throw err;
+                    console.log('Game successfully updated!');
+                });
+            });
+            io.sockets.in(this.id).emit("turn", {turn: turn});
+            sockets[players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
             flow = setTimeout(advance, turnDuration);
         }
     }

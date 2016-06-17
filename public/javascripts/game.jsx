@@ -37,13 +37,13 @@ socket.on('reconnect', () => {
 });
 
 socket.on('start turn', (data) => {
-    var sentence = data.sentence;
+    var sentence = data.lastSentence;
     if (!mySentence.disabled) clock.stop();//in case the server crashed - gives the user an extra 2 minutes.
     mySentence.disabled = false
     console.log(lastSentence.val())
     lastSentence.val(sentence);
     var start = new Date();
-    console.log()
+    console.log('sentence' + sentence)
     clock.countdown(start.setMinutes(start.getMinutes() + 2), endTurn);
 });
 
@@ -51,9 +51,9 @@ socket.on('turn', (data) => {
     curPlayer = data.nextPlayer;
 });
 
-socket.on('Game End', (story) => {
-    $('storyArea').value = data.story;
-    $('storyArea').hidden = false;
+socket.on('Game End', (data) => {
+    $('#storyArea').show();
+    $('#storyArea').val(data.story);
 });
 
 //window.onbeforeunload =

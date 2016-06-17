@@ -18,16 +18,16 @@ function Game(lines, id) {
         else {
             turn = (turn + 1) % that.players.length;
             // Find and update the game, turns left and story
-            GameModel.find({id: that.id}, function (err, gameFound) {
-                if (err) throw err;
-                gameFound.turnsLeft = that.linesLeft;
-                gameFound.curTurn = turn;
-                gameFound.story = story;
-                gameFound.save(function (err) {
-                    if (err) throw err;
-                    console.log('Game successfully updated!');
-                });
-            });
+            //GameModel.find({id: that.id}, function (err, gameFound) {
+            //    if (err) throw err;
+            //    gameFound.turnsLeft = that.linesLeft;
+            //    gameFound.curTurn = turn;
+            //    gameFound.story = story;
+            //    gameFound.save(function (err) {
+            //        if (err) throw err;
+            //        console.log('Game successfully updated!');
+            //    });
+            //});
             io.sockets.in(that.id).emit("turn", {turn: turn});
             sockets[that.players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
             flow = setTimeout(advance, turnDuration);
@@ -51,7 +51,7 @@ function Game(lines, id) {
         return that.linesLeft == 0;
     }
 
-    var fullStory = () => that.story.join();
+    var fullStory = () => story.join();
 
 }
 module.exports = Game;

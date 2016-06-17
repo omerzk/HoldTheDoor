@@ -23,6 +23,9 @@ function Game(lines, id) {
         if (done()) {
             delete activeGames[that.id];
             // Find and delete this Game from the DB
+            var st = fullStory();
+            console.log(st);
+            io.sockets.in(that.id).emit('Game End', {story: st});
             GameModel.findOne({ id: that.id }, function(err, gameFound) {
                 if (err) throw err;
                 gameFound.remove(function(err) {
@@ -30,7 +33,6 @@ function Game(lines, id) {
                     console.log('Game successfully deleted!');
                 });
             });
-            io.sockets.in(this.id).emit('Game End', {story: fullStory()});
         }
         else {
             turn = (turn + 1) % that.players.length;

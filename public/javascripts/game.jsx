@@ -27,7 +27,7 @@ socket.on('connect', () => {
 });
 
 socket.on('reconnect', () => {
-    socket.emit("HELLO", {name: playerName, game: gameName});
+    socket.emit("reHELLO", {name: playerName, game: gameName});
 });
 
 socket.on('start turn', (data) => {
@@ -44,7 +44,7 @@ socket.on('turn', (data) => {
 });
 
 socket.on('Game End', (story) => {
-    $('storyArea').value = story;
+    $('storyArea').value = data.story;
     $('storyArea').hidden = false;
 });
 

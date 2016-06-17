@@ -13,8 +13,10 @@ var Account = require('./models/account.js');
 var shell = require('shelljs');
 
 var app = express();
+
 ////////////////////////////Global/////////////////////////////////////////////////////////////////
 activeGames = {};
+sockets = {};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -59,8 +61,8 @@ app.post('/games/newGame', function (req, res) {
     if (activeGames[gameName] == null) {
       var lines = parseInt(req.body.turns);
       var creator = req.body.name;
-      console.log([lines, gameName, creator])
-      activeGames[gameName] = new Game(lines, gameName, creator);
+      console.log([lines, gameName])
+      activeGames[gameName] = new Game(lines, gameName);
       res.status(200).send()
     }
     else res.status(409).send('you already have a game!')

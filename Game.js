@@ -6,7 +6,7 @@ function Game(lines, id) {
     var linesLeft = lines;
     var turnDuration = 120 * 1000 * 3;
     var flow = setTimeout(advance, turnDuration);
-    
+
     function advance() {
         if (done()) {
             delete activeGames[this.id]

@@ -8,8 +8,6 @@ var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
 var https = require('http');
 var fs = require('fs');
-var wtf = require("../GameController");
-var GameController = new wtf.g();
 /**
  * Get port from environment and store in Express.
  */
@@ -29,7 +27,7 @@ var pathToCerts = '/etc/letsencrypt/live/sentencegameomer.tk';
  * Create HTTPs server.
  */
 var server = https.createServer(app);
-var io = require('socket.io')(server);
+io = require('socket.io')(server);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -41,21 +39,21 @@ server.on('listening', onListening);
 
 io.sockets.on('connection', (socket) => {
   console.log('a user has connected');
-  socket.on('HELLO', (data) => {
-    console.log('hello');
-    console.log(data);
-    socket.player = data.name;
-    socket.gameName = data.game;
-    var gameID = GameController.attach(socket);
-    socket.join(gameID);// put socket in a specific game channel
-  }
-  socket.on();
-  )
-  ;
 
-  socket.on('disconnect', ()=> {
-    GameController.freeze(socket.player);
-  })
+  socket.on('HELLO', (data) => {
+    socket.player = data.name;
+    socket.game = data.game;
+    socket.join(data.game);        // put socket in a specific game channel
+    activeGames[data.game].addPlayer(socket.player);
+    sockets[socket.player] = socket;
+
+  });
+
+  socket.on('reHELLO', ()=> {
+    sockets[socket.player] = socket;
+  });
+
+  socket.on('submit', data => activeGame[socket.game].submitSentence(data.sentence));
 
 });
 

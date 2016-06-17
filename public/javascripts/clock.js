@@ -8,7 +8,7 @@ function Clock(id) {
 
     var timeinterval, endtime, callback;
 
-    function countdown(time, cb) {
+    this.countdown = (time, cb) => {
         timeinterval = setInterval(updateClock, 1000);
         endtime = time;
         callback = cb;

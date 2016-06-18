@@ -48,7 +48,6 @@ db.once('open', function () {
       newGame.updatefromDB(mongoGames[i]);
       activeGames[gameName] = newGame;
     }
-    console.log(activeGames)
   });
 });
 
@@ -104,18 +103,22 @@ app.get('/game', function (req, res) {
 
 
 app.post('/joinGame', function joinGame(req, res) {
-  if (req.body.gameName == null || activeGames[req.body.gameName] == null) res.redirect('/games');
-  else {
-    GameModel.findOne({id: req.body.gameName}, function (err, gameFound) {
+  var gameName = req.body.gameName;
+  var playerName = req.body.name;
+  if (gameName == null || activeGames[gameName] == null) {
+    res.redirect('/games');
+  }
+  else if (activeGames[gameName].players.indexOf(playerName) === -1) {
+    GameModel.findOne({id: gameName}, function (err, gameFound) {
         if (err) throw err;
-        gameFound.players.push(req.body.name);
+        gameFound.players.push(playerName);
         gameFound.save(function (err) {
           if (err) throw err;
-          console.log('Game successfully added a player!');
+          console.log('Game successfully added a player to DB!');
         });
-      });
-    res.status(200).send();
+    });
   }
+  res.status(200).send();
 });
 
 

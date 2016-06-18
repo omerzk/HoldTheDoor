@@ -16,8 +16,8 @@ function Game(lines, id) {
         this.id = mongoGame.id;
         story = mongoGame.story;
         turn = mongoGame.curTurn;
-        players = mongoGame.players;
-        linesLeft = mongoGame.turnsLeft;
+        this.players = mongoGame.players;
+        this.linesLeft = mongoGame.turnsLeft;
     };
 
     function endGame() {

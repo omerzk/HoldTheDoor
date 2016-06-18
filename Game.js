@@ -4,12 +4,13 @@ var GameModel = require('./models/Game.js');
 function Game(lines, id) {
     this.id = id;
     var story = [""];
-    var turn = 0;
+    var turn = -1;
     this.players = [];
     this.linesLeft = lines;
     var turnDuration = 120 * 1000 * 3;
-    var flow = setTimeout(advance, turnDuration);
     var that = this;
+    var flow;
+    var first = true;
 
     this.updatefromDB = function (mongoGame) {
         this.id = mongoGame.id;
@@ -19,23 +20,28 @@ function Game(lines, id) {
         linesLeft = mongoGame.turnsLeft;
     };
 
+    function endGame() {
+        delete activeGames[that.id];
+        // Find and delete this Game from the DB
+        var st = fullStory();
+        io.sockets.in(that.id).emit('Game End', {story: st});
+        GameModel.findOne({id: that.id}, function (err, gameFound) {
+            if (err) throw err;
+            gameFound.remove(function (err) {
+                if (err) throw err;
+                console.log('Game successfully deleted!');
+            });
+        });
+    }
     function advance() {
         if (done()) {
-            delete activeGames[that.id];
-            // Find and delete this Game from the DB
-            var st = fullStory();
-            io.sockets.in(that.id).emit('Game End', {story: st});
-            GameModel.findOne({ id: that.id }, function(err, gameFound) {
-                if (err) throw err;
-                gameFound.remove(function(err) {
-                    if (err) throw err;
-                    console.log('Game successfully deleted!');
-                });
-            });
+            endGame();
         }
         else {
-            turn = (turn + 1) % that.players.length;
-            // Find and update the game, turns left and story
+            var next = nextPlayer();
+            if (sockets[that.players[next]] == null) endGame();//no more players in game
+            else turn = next;
+
             console.log('id: ' + that.id);
             GameModel.findOne({id: that.id}, function (err, gameFound) {
                 if (err) throw err;
@@ -65,7 +71,14 @@ function Game(lines, id) {
     };
 
 
-    this.addPlayer = (player)=> that.players.push(player);
+    this.addPlayer = (player)=> {
+        that.players.push(player);
+        if (first) {
+            advance();
+            first = false;
+        }
+    };
+
     this.removePlayer = (playerName) => remove(that.players, playerName);
     function done() {
         return that.linesLeft == 0;
@@ -77,6 +90,14 @@ function Game(lines, id) {
         return a.join("\n")
     };
 
+
+    function nextPlayer() {
+        var next;
+        do {
+            next = (turn + 1) % that.players.length;
+        } while (next !== turn && sockets[that.players[turn]] == null);
+        return next;
+    }
 }
 module.exports = Game;
 

@@ -44,8 +44,8 @@ io.sockets.on('connection', (socket) => {
     socket.player = data.name;
     socket.game = data.game;
     socket.join(data.game);        // put socket in a specific game channel
-    activeGames[data.game].addPlayer(socket.player);
     sockets[socket.player] = socket;
+    activeGames[data.game].addPlayer(socket.player);
     io.sockets.in(activeGames[data.game].id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
   });
 

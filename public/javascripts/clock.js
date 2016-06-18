@@ -1,23 +1,21 @@
 /**
  * Created by omer on 16/06/2016.
  */
-function Clock(id) {
+function Clock(id, cb) {
     var clock = $(id);
     var minutesSpan = $('.minutes');
     var secondsSpan = $('.seconds');
-
-    var timeinterval, endtime, callback;
+    var callback = cb;
+    var timeinterval, endtime;
 
     this.countdown = (time, cb) => {
         timeinterval = setInterval(updateClock, 1000);
         endtime = time;
-        callback = cb;
         updateClock();
-    }
+    };
 
     function updateClock() {
         var t = getTimeRemaining(endtime);
-        console.log(t)
         minutesSpan.html(t.minutes);
         secondsSpan.html(('0' + t.seconds).slice(-2));
 
@@ -27,15 +25,15 @@ function Clock(id) {
     }
 
     function finish() {
-        clearInterval(timeinterval);
-        minutesSpan.html('-');
-        secondsSpan.html('-');
+        this.stop();
         callback();
     }
 
-    function stop() {
+    this.stop = () => {
         clearInterval(timeinterval);
-    }
+        minutesSpan.html('-');
+        secondsSpan.html('-');
+    };
 
     function getTimeRemaining(endtime) {
         var t = Date.parse(endtime) - new Date();

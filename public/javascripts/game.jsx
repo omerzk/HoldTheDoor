@@ -4,7 +4,7 @@
 var serverAddr = 'http://localhost:3000';
 var socket = io.connect(serverAddr);
 var mySentence = $('#mySentence');
-var clock = new Clock("#clockdiv");
+var clock = new Clock("#clockdiv", endTurn);
 
 var lastSentence = $('#lastSentence');
 var curPlayer = null;
@@ -15,12 +15,12 @@ var playerName = sessionStorage.getItem('name');
 $(document).ready(()=> {
     $('#inputForm').submit(function submitSentence(evt) {
         evt.preventDefault();
-        console.log("this place");
         endTurn(mySentence.val());
     })
 });
 
 function endTurn(sentence) {
+    clock.stop();
     console.log("endTurn" + sentence);
     mySentence.disabled = true;
     mySentence.val('');
@@ -47,12 +47,13 @@ socket.on('start turn', (data) => {
     lastSentence.val(sentence);
     var start = new Date();
     start.setMinutes(start.getMinutes() + 2);
-    clock.countdown(start, endTurn);
+    clock.countdown(start);
     console.log('sentence' + sentence)
 
 });
 
 socket.on('Game End', (data) => {
+    clock.stop();
     var storyArea = $('#storyArea');
     storyArea.show();
     storyArea.val(data.story);

@@ -47,14 +47,16 @@ class GameBoard extends React.Component {
 
 
     joinGame(k) {
-        return (k) => {
+        return () => {
+            console.log(k);
+            console.log(this.state.activeGames)
             var name = sessionStorage.getItem('name');
             console.log('join game');
             var gameName = this.state.activeGames[k].id;
             sessionStorage.setItem("gameName", gameName);
             $.ajax({
-                url: '/games/newGame',
-                data: ({name: name, gamename: gameName}),
+                url: '/joinGame',
+                data: ({name: name, gameName: gameName}),
                 dataType: "text",
                 method: "POST",
                 success: (response) => {

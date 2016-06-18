@@ -108,8 +108,8 @@ app.get('/game', function (req, res) {
 app.post('/joinGame', function joinGame(req, res) {
   if (req.body.gameName == null || activeGames[req.body.gameName] == null) res.redirect('/games');
   else {
-      activeGames[req.body.gameName].players.push(req.body.name);
-      GameModel.findOne({ id: req.body.gamename }, function(err, gameFound) {
+    activeGames[req.body.gameName].addPlayer(req.body.name);
+    GameModel.findOne({id: req.body.gameName}, function (err, gameFound) {
         if (err) throw err;
         gameFound.players.push(req.body.name);
         gameFound.save(function (err) {
@@ -117,7 +117,7 @@ app.post('/joinGame', function joinGame(req, res) {
           console.log('Game successfully added a player!');
         });
       });
-      res.statusCode(200).send();
+    res.status(200).send();
   }
 });
 

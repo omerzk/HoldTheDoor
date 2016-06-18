@@ -69,13 +69,11 @@ app.post('/games/newGame', function (req, res) {
     var gameName = req.body.gamename;
     if (activeGames[gameName] == null) {
       var lines = parseInt(req.body.turns);
-      var creator = req.body.name;
-      activeGames[gameName] = new Game(lines, gameName, creator);
       var mongoGame = new GameModel({
         id: gameName,
         turnsLeft: lines,
         curTurn: 0,
-        players: [creator],
+        players: [],
         story: []
       }).save(function (err, mongoGame) {
         if (err) return console.error(err);

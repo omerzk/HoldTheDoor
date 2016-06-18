@@ -5,27 +5,29 @@
 class GameBoard extends React.Component {
     constructor() {
         super();
-        this.url = '/games/active';
-        this.dataType = 'json';
         this.state = {activeGames: []};
-        var that = this;
+        this.getGames();
+        this.inter = setInterval(this.getGames.bind(this), 5000);
+
+
+    }
+
+    getGames() {
         $.ajax({
-            url: that.url,
-            dataType: that.dataType,
+            url: '/games/active',
+            dataType: 'json',
             'Content-type': 'application/json',
             method: "GET",
             success: (res) => {
                 console.log(res);
-                that.setState({activeGames: res});
+                this.setState({activeGames: res});
             },
             error: GameBoard.requestError
-        })
-
+        });
     }
-
-
     newGame(evt) {
         evt.preventDefault();
+        clearInterval(this.inter);
         var numTurns = $('#Turns').val();
         var gameName = $('#GameName').val();
         var name = sessionStorage.getItem('name');
@@ -48,6 +50,7 @@ class GameBoard extends React.Component {
 
     joinGame(k) {
         return () => {
+            clearInterval(this.inter);
             console.log(k);
             console.log(this.state.activeGames)
             var name = sessionStorage.getItem('name');

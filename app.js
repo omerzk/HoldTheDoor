@@ -108,7 +108,6 @@ app.get('/game', function (req, res) {
 app.post('/joinGame', function joinGame(req, res) {
   if (req.body.gameName == null || activeGames[req.body.gameName] == null) res.redirect('/games');
   else {
-    activeGames[req.body.gameName].addPlayer(req.body.name);
     GameModel.findOne({id: req.body.gameName}, function (err, gameFound) {
         if (err) throw err;
         gameFound.players.push(req.body.name);

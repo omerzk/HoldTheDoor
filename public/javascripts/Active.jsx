@@ -45,26 +45,28 @@ class GameBoard extends React.Component {
         });
     }
 
-    joinGame(evt) {
-        evt.preventDefault();
-        var name = sessionStorage.getItem('name');
-        console.log('join game');
-        console.log(this);
-        sessionStorage.setItem("gameName", gameName);
-        $.ajax({
-            url: '/games/newGame',
-            data: ({name: name, gamename: GameName}),
-            dataType: "text",
-            method: "POST",
-            success: (response) => {
-                console.log("success");
-                console.log(response);
-                window.location = "/game"
-            },
-            error: GameBoard.requestError
-        });
 
+    joinGame(k) {
+        return (k) => {
+            var name = sessionStorage.getItem('name');
+            console.log('join game');
+            var gameName = this.state.activeGames[k].id;
+            sessionStorage.setItem("gameName", gameName);
+            $.ajax({
+                url: '/games/newGame',
+                data: ({name: name, gamename: gameName}),
+                dataType: "text",
+                method: "POST",
+                success: (response) => {
+                    console.log("success");
+                    console.log(response);
+                    window.location = "/game"
+                },
+                error: GameBoard.requestError
+            });
+        }
     }
+
 
     static requestError(jqXHR, textStatus, errorThrown) {
         if (jqXHR.status === 401) {
@@ -78,7 +80,7 @@ class GameBoard extends React.Component {
         console.log(this.state.activeGames)
         var gameList = Object.keys(this.state.activeGames).map((key, i) => {
             return (
-                <tr key={i} onclick={this.joinGame}>
+                <tr key={i} onClick={this.joinGame(key)}>
                     <td data-th="Game Name">{this.state.activeGames[key].id}</td>
                     <td data-th="Lines">{this.state.activeGames[key].linesLeft}</td>
                     <td data-th="#Players">{this.state.activeGames[key].players.length}</td>
@@ -93,8 +95,8 @@ class GameBoard extends React.Component {
                             <ul id="addPanel">
                                 <li >
                                     <form onSubmit={this.newGame.bind(this)}>
-                                        <input id="GameName" placeholder="GameName"/>
-                                        <input id="Turns" placeholder="#Turns"/>
+                                        <input id="GameName" placeholder="GameName" type="text" required/>
+                                        <input id="Turns" placeholder="#Turns" type="number" required/>
                                         <button>Create</button>
                                     </form>
                                 </li>

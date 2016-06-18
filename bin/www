@@ -46,15 +46,16 @@ io.sockets.on('connection', (socket) => {
     socket.join(data.game);        // put socket in a specific game channel
     activeGames[data.game].addPlayer(socket.player);
     sockets[socket.player] = socket;
-
+    io.sockets.in(activeGames[data.game].id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
   });
 
   socket.on('reHELLO', ()=> {
     sockets[socket.player] = socket;
   });
 
-  socket.on('submit', data => {
-    if (activeGames[socket.game] !== null)activeGames[socket.game].submitSentence(data.sentence)
+  socket.on('submit', (data) => {
+    if (activeGames[socket.game] !== null)
+      activeGames[socket.game].submitSentence(data.sentence)
   });
 
 });

@@ -17,9 +17,9 @@ function Clock(id) {
 
     function updateClock() {
         var t = getTimeRemaining(endtime);
-
-        minutesSpan.innerHTML = t.days;
-        secondsSpan.innerHTML = ('0' + t.minutes).slice(-2);
+        console.log(t)
+        minutesSpan.html(t.minutes);
+        secondsSpan.html(('0' + t.seconds).slice(-2));
 
         if (t.total <= 0) {
             finish();
@@ -28,9 +28,9 @@ function Clock(id) {
 
     function finish() {
         clearInterval(timeinterval);
-        minutesSpan.innerHTML = '-';
-        secondsSpan.innerHTML = '-';
-        cb();
+        minutesSpan.html('-');
+        secondsSpan.html('-');
+        callback();
     }
 
     function stop() {
@@ -38,7 +38,7 @@ function Clock(id) {
     }
 
     function getTimeRemaining(endtime) {
-        var t = Date.parse(endtime) - Date.parse(new Date());
+        var t = Date.parse(endtime) - new Date();
         var seconds = Math.floor((t / 1000) % 60);
         var minutes = Math.floor((t / 1000 / 60) % 60);
         return {

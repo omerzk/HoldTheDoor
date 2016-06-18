@@ -24,7 +24,6 @@ function Game(lines, id) {
             delete activeGames[that.id];
             // Find and delete this Game from the DB
             var st = fullStory();
-            console.log(st);
             io.sockets.in(that.id).emit('Game End', {story: st});
             GameModel.findOne({ id: that.id }, function(err, gameFound) {
                 if (err) throw err;
@@ -72,7 +71,11 @@ function Game(lines, id) {
         return that.linesLeft == 0;
     }
 
-    var fullStory = () => story.join();
+    var fullStory = () => {
+        a = story.slice();
+        a.shift();
+        return a.join("\n")
+    };
 
 }
 module.exports = Game;

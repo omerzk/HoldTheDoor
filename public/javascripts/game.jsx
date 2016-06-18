@@ -4,12 +4,13 @@
 var serverAddr = 'http://localhost:3000';
 var socket = io.connect(serverAddr);
 var mySentence = $('#mySentence');
-var clock = new Clock();
+var clock = new Clock("#clockdiv");
 
 var lastSentence = $('#lastSentence');
 var curPlayer = null;
 var gameName = sessionStorage.getItem('gameName');
 var playerName = sessionStorage.getItem('name');
+
 
 $(document).ready(()=> {
     $('#inputForm').submit(function submitSentence(evt) {
@@ -26,8 +27,6 @@ function endTurn(sentence) {
     if (sentence !== null)socket.emit('submit', {sentence: sentence});
 }
 
-
-
 socket.on('connect', () => {
     socket.emit("HELLO", {name: playerName, game: gameName});
 });
@@ -36,24 +35,27 @@ socket.on('reconnect', () => {
     socket.emit("reHELLO", {name: playerName, game: gameName});
 });
 
-socket.on('start turn', (data) => {
-    var sentence = data.lastSentence;
-    if (!mySentence.disabled) clock.stop();//in case the server crashed - gives the user an extra 2 minutes.
-    mySentence.disabled = false
-    console.log(lastSentence.val())
-    lastSentence.val(sentence);
-    var start = new Date();
-    console.log('sentence' + sentence)
-    clock.countdown(start.setMinutes(start.getMinutes() + 2), endTurn);
-});
-
 socket.on('turn', (data) => {
     curPlayer = data.nextPlayer;
 });
 
+socket.on('start turn', (data) => {
+    var sentence = data.lastSentence;
+    if (!mySentence.disabled) clock.stop();//in case the server crashed - gives the user an extra 2 minutes.
+    mySentence.disabled = false;
+    console.log(lastSentence.val());
+    lastSentence.val(sentence);
+    var start = new Date();
+    start.setMinutes(start.getMinutes() + 2);
+    clock.countdown(start, endTurn);
+    console.log('sentence' + sentence)
+
+});
+
 socket.on('Game End', (data) => {
-    $('#storyArea').show();
-    $('#storyArea').val(data.story);
+    var storyArea = $('#storyArea');
+    storyArea.show();
+    storyArea.val(data.story);
 });
 
 //window.onbeforeunload =
@@ -63,9 +65,9 @@ class PlayerList extends React.Component {
     constructor() {
         super();
         this.state = {playerList: [], curPlayer: null};
-        socket.emit('Game Data', {game: gameName});
-        socket.on('player List', (data)=> {
+        socket.on('Player List', (data)=> {
             this.setState({playerList: data.playerList, curPlayer: data.curPlayer});
+            console.log(data.playerList)
             }
         );
     }
@@ -84,10 +86,9 @@ class PlayerList extends React.Component {
 
         return (
             <section>
-                <table id="GameBoard">
-                    <caption>GameBoard</caption>
+                <table id="PlayerTable">
                     <colgroup>
-                        <col>Player</col>
+                        <col></col>
                     </colgroup>
                     <thead>
                     <tr>

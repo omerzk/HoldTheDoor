@@ -68,12 +68,12 @@ db.once('open', function () {
   /**
    * Create HTTPs server.
    */
-  //server = https.createServer(app);
+  server = https.createServer(app);
 
   /**
    * Create HTTP server.
    */
-  server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
+    //server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
 
   io = require('socket.io')(server);
   console.log("post db2")

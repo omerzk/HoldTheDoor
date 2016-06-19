@@ -1,7 +1,7 @@
 /**
  * Created by omer on 15/06/2016.
  */
-var serverAddr = 'sentencegameomer.tk';
+var serverAddr = 'http://sentgame.southeastasia.cloudapp.azure.com';
 var socket = io.connect(serverAddr);
 var mySentence = $('#mySentence');
 var clock = new Clock("#clockdiv", endTurn);

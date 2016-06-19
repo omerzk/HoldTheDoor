@@ -38,7 +38,7 @@ io = null;
 var LEX = require('letsencrypt-express');
 
 var lex = LEX.create({
-  configDir: require('os').homedir() + '/letsencrypt/etc',
+  configDir: pathToCerts,//require('os').homedir() + '/letsencrypt/etc',
   approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
     // Note: this is the place to check your database to get the user associated with this domain
     cb(null, {
@@ -68,12 +68,12 @@ db.once('open', function () {
   /**
    * Create HTTPs server.
    */
-  //server = https.createServer(app);
+  server = https.createServer(app);
 
   /**
    * Create HTTP server.
    */
-    server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
+    //server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
 
   io = require('socket.io')(server);
   console.log("post db2")

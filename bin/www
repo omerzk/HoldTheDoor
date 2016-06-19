@@ -96,7 +96,7 @@ server.on('listening', onListening);
   socket.on('HELLO', (data) => {
     console.log('Hello' + data.name);
     var game = activeGames[data.game];
-    if (game == null)return socket.emit('OUT');
+    if (game == null)return;
     socket.player = data.name;
     socket.game = data.game;
 

@@ -3,9 +3,9 @@
  */
 var serverAddr = 'http://sentgame.southeastasia.cloudapp.azure.com/';
 var socket = io.connect(serverAddr);
+
 var mySentence = $('#mySentence');
 var clock = new Clock("#clockdiv", endTurn);
-
 var lastSentence = $('#lastSentence');
 var curPlayer = null;
 var gameName = sessionStorage.getItem('gameName');

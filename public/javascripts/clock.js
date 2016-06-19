@@ -5,6 +5,8 @@ function Clock(id, cb) {
     var clock = $(id);
     var minutesSpan = $('.minutes');
     var secondsSpan = $('.seconds');
+    minutesSpan.html('-');
+    secondsSpan.html('-');
     var callback = cb;
     var timeinterval, endtime;
 

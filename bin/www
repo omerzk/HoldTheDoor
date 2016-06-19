@@ -89,8 +89,10 @@ io.sockets.on('connection', (socket) => {
   });
 
   socket.on('reHELLO', ()=> {
-    sockets[socket.game][socket.player] = socket;
-    socket.join(activeGames[socket.game].id);
+    if (socekts[game] != null) {
+      sockets[socket.game][socket.player] = socket;
+      socket.join(activeGames[socket.game].id);
+    }
   });
 
   socket.on('submit', (data) => {
@@ -110,7 +112,7 @@ io.sockets.on('connection', (socket) => {
           console.log('Game successfully added a player to DB!');
         });
       });
-      io.sockets.in(game.id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
+      io.sockets.in(game.id).emit('Player List', {playerList: game.players});//update players
       console.log('Disconnect', socket.player)
     }
 

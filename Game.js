@@ -35,7 +35,7 @@ function Game(lines, id) {
         });
     }
     function advance() {
-        if (done()) {
+        if (done() || that.players.length === 0) {
             endGame();
         }
         else {

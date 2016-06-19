@@ -109,7 +109,7 @@ server.on('listening', onListening);
         gameFound.players = game.players;
         gameFound.save(function (err) {
           if (err) throw err;
-          console.log('Game successfully added a player to DB!');
+          console.log('Game successfully removed a player to DB!');
         });
       });
       io.sockets.in(game.id).emit('Player List', {playerList: game.players});//update players

@@ -19,7 +19,7 @@ var port = normalizePort(process.env.PORT || '80');
 app.set('port', port);
 var server;
 // Create options for encryption
-var pathToCerts = '/etc/letsencrypt/live/sentencegameomer.tk';
+var pathToCerts = 'etc/letsencrypt/live/sentgame.tk';
 var options = {
   key: fs.readFileSync(pathToCerts + '/privkey.pem'),
   cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),

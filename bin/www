@@ -6,7 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
-var https = require('http');
+var https = require('https');
 var fs = require('fs');
 var mongoose = require('mongoose');
 var Game = require('../Game.js');
@@ -20,11 +20,11 @@ app.set('port', port);
 var server;
 // Create options for encryption
 var pathToCerts = '/etc/letsencrypt/live/sentencegameomer.tk';
-//var options = {
-//  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
-//  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
-//  ca: fs.readFileSync(pathToCerts + '/chain.pem')
-//}
+var options = {
+  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
+  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
+  ca: fs.readFileSync(pathToCerts + '/chain.pem')
+}
 
 
 var dbReady = false;
@@ -45,22 +45,17 @@ db.once('open', function () {
       activeGames[gameName] = newGame;
     }
   });
-  console.log("post db")
 
   /**
    * Create HTTPs server.
    */
   server = https.createServer(app);
   io = require('socket.io')(server);
-  console.log("post db2")
-
   /**
    * Listen on provided port, on all network interfaces.
    */
-  console.log("post db3")
 
-  server.listen(port);
-  console.log("post db4")
+  server.listen(options, port);
 
   server.on('error', onError);
 server.on('listening', onListening);

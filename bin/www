@@ -20,11 +20,11 @@ app.set('port', port);
 var server;
 // Create options for encryption
 var pathToCerts = 'etc/letsencrypt/live/sentgame.tk';
-var options = {
-  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
-  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
-  ca: fs.readFileSync(pathToCerts + '/chain.pem')
-};
+//var options = {
+//  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
+//  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
+//  ca: fs.readFileSync(pathToCerts + '/chain.pem')
+//}
 
 
 var dbReady = false;
@@ -33,6 +33,24 @@ var dbReady = false;
 mongoose.connect('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
 var db = mongoose.connection;
 io = null;
+
+//inint let'sencrypt struct
+var LEX = require('letsencrypt-express');
+
+var lex = LEX.create({
+  configDir: require('os').homedir() + '/letsencrypt/etc',
+  approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
+    // Note: this is the place to check your database to get the user associated with this domain
+    cb(null, {
+      domains: ['sentencegameomer.tk'],
+      email: 'Rom.cohen90@gmail.com',
+      agreeTos: true
+    });
+  }
+});
+
+
+
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
   console.log("DB ready");
@@ -45,17 +63,28 @@ db.once('open', function () {
       activeGames[gameName] = newGame;
     }
   });
+  console.log("post db")
 
   /**
    * Create HTTPs server.
    */
-  server = https.createServer(options, app);
+  server = https.createServer(app);
+
+  /**
+   * Create HTTP server.
+   */
+    //server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
+
   io = require('socket.io')(server);
+  console.log("post db2")
+
   /**
    * Listen on provided port, on all network interfaces.
    */
+  console.log("post db3")
 
   server.listen(port);
+  console.log("post db4")
 
   server.on('error', onError);
 server.on('listening', onListening);
@@ -89,7 +118,7 @@ server.on('listening', onListening);
   });
 
   socket.on('reHELLO', ()=> {
-    if (socekts[game] != null) {
+    if (sockets[socket.game] != null) {
       sockets[socket.game][socket.player] = socket;
       socket.join(activeGames[socket.game].id);
     }
@@ -104,14 +133,16 @@ server.on('listening', onListening);
     var game = activeGames[socket.game];
     if (game != null) {
       game.removePlayer(socket.player);
-      GameModel.findOne({id: game.id}, function (err, gameFound) {
-        if (err) throw err;
-        gameFound.players = game.players;
-        gameFound.save(function (err) {
-          if (err) throw err;
-          console.log('Game successfully removed a player to DB!');
+      if (!game.players.length > 0) {
+        GameModel.findOne({id: game.id}, function (err, gameFound) {
+          if (err) return console.log(err);
+          gameFound.players = game.players;
+          gameFound.save(function (err) {
+            if (err) return console.log(err);
+            console.log('Game successfully added a player to DB!');
+          });
         });
-      });
+      }
       io.sockets.in(game.id).emit('Player List', {playerList: game.players});//update players
       console.log('Disconnect', socket.player)
     }
@@ -164,7 +195,7 @@ function onError(error) {
       process.exit(1);
       break;
     default:
-      throw error;
+      return console.log(error);
   }
 }
 

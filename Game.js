@@ -27,9 +27,9 @@ function Game(lines, id) {
         var st = fullStory();
         io.sockets.in(that.id).emit('Game End', {story: st});
         GameModel.findOne({id: that.id}, function (err, gameFound) {
-            if (err) throw err;
+            if (err)  return console.log(err);
             gameFound.remove(function (err) {
-                if (err) throw err;
+                if (err) return console.log(err);
                 console.log('Game successfully deleted!');
             });
         });
@@ -47,13 +47,13 @@ function Game(lines, id) {
 
             console.log('id: ' + that.id);
             GameModel.findOne({id: that.id}, function (err, gameFound) {
-                if (err) throw err;
+                if (err) return console.log(err);
                 //console.log(gameFound);
                 gameFound.turnsLeft = that.linesLeft;
                 gameFound.curTurn = turn;
                 gameFound.story = story;
                 gameFound.save(function (err) {
-                    if (err) throw err;
+                    if (err) return console.log(err);
                     console.log('Game successfully updated!');
                 });
             });

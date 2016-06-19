@@ -118,7 +118,7 @@ server.on('listening', onListening);
   });
 
   socket.on('reHELLO', ()=> {
-    if (socekts[game] != null) {
+    if (sockets[game] != null) {
       sockets[socket.game][socket.player] = socket;
       socket.join(activeGames[socket.game].id);
     }

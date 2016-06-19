@@ -43,22 +43,22 @@ console.log("post db3")
 server.listen(port);
 console.log("post db4")
 //Init remote mongodb
-mongoose.connect('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
-var db = mongoose.connection;
-io = null;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
-  console.log("DB ready");
-  dbReady = true;
-  GameModel.find({}, function (err, mongoGames) {
-    for (i = 0; i < mongoGames.length; i++) {
-      var gameName = mongoGames[i].id;
-      var newGame = new Game(mongoGames[i].turnsLeft, mongoGames[i].id);
-      newGame.updatefromDB(mongoGames[i]);
-      activeGames[gameName] = newGame;
-    }
-  });
-  console.log("post db")
+//mongoose.connect('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
+//var db = mongoose.connection;
+//io = null;
+//db.on('error', console.error.bind(console, 'connection error:'));
+//db.once('open', function () {
+//  console.log("DB ready");
+//  dbReady = true;
+//  GameModel.find({}, function (err, mongoGames) {
+//    for (i = 0; i < mongoGames.length; i++) {
+//      var gameName = mongoGames[i].id;
+//      var newGame = new Game(mongoGames[i].turnsLeft, mongoGames[i].id);
+//      newGame.updatefromDB(mongoGames[i]);
+//      activeGames[gameName] = newGame;
+//    }
+//  });
+//  console.log("post db")
 
 
 
@@ -123,7 +123,6 @@ server.on('listening', onListening);
 
   });
 
-});
 });
 /**
  * Normalize a port into a number, string, or false.

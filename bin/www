@@ -52,16 +52,21 @@ db.once('open', function () {
  */
 server = https.createServer(app);
 io = require('socket.io')(server);
+  console.log("post db2")
 
 /**
  * Listen on provided port, on all network interfaces.
  */
+console.log("post db3")
 
 server.listen(port);
-server.on('error', onError);
+  console.log("post db4")
+
+  server.on('error', onError);
 server.on('listening', onListening);
 
-io.sockets.on('connection', (socket) => {
+
+  io.sockets.on('connection', (socket) => {
   console.log('a user has connected');
 
   socket.on('HELLO', (data) => {

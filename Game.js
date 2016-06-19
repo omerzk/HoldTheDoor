@@ -48,7 +48,7 @@ function Game(lines, id) {
             console.log('id: ' + that.id);
             GameModel.findOne({id: that.id}, function (err, gameFound) {
                 if (err) throw err;
-                console.log(gameFound);
+                //console.log(gameFound);
                 gameFound.turnsLeft = that.linesLeft;
                 gameFound.curTurn = turn;
                 gameFound.story = story;
@@ -79,31 +79,35 @@ function Game(lines, id) {
     this.addPlayer = (player)=> {
         that.players.push(player);
         console.log(that.players)
-        if (first) {
+        if (that.players.length == 1) {
             advance();
-            first = false;
         }
     };
+    this.currentPlayer = ()=> that.players[turn];
+    this.removePlayer = (playerName) => {
+        var player = this.currentPlayer();
+        remove(that.players, playerName);
+        turn--;
+        if (player == playerName) advance();
 
-    this.removePlayer = (playerName) => remove(that.players, playerName);
+
+    }
+
     function done() {
         return that.linesLeft == 0;
     }
 
     var fullStory = () => {
-        a = story.slice();
-        a.shift();
-        return a.join("\n")
+        return story.join("\n")
     };
 
 
     function nextPlayer() {
-        var next;
-        console.log('first player', that.players[0])
-
+        var next = turn;
         do {
-            next = (turn + 1) % that.players.length;
+            next = (next + 1) % that.players.length;
         } while (next !== turn && sockets[that.id][that.players[next]] == null);
+        console.log('next done')
         return next;
     }
 }

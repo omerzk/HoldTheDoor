@@ -74,8 +74,8 @@ class GameBoard extends React.Component {
 
 
     static requestError(jqXHR, textStatus, errorThrown) {
-        if (jqXHR.status === 401) {
-            window.location = "/";
+        if (jqXHR.status === 409) {
+            alert('Username already in Game');
         }
         console.log("AddGame message - Ajax Error: " + textStatus, errorThrown);
     }

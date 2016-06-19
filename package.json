@@ -21,6 +21,7 @@
     "mongoose": "latest",
     "passport-custom": "latest",
     "pubnub": "latest",
-    "socket.io": "latest"
+    "socket.io": "latest",
+    "shelljs": "latest"
   }
 }

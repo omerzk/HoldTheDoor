@@ -60,7 +60,7 @@ app.post('/games/newGame', function (req, res) {
       activeGames[gameName] = new Game(lines, gameName);
       res.status(200).send()
     }
-    else res.status(409).send('you already have a game!')
+    else res.status(409).send('Game name occupied')
   }
 });
 

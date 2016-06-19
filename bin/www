@@ -65,7 +65,9 @@ io.sockets.on('connection', (socket) => {
   console.log('a user has connected');
 
   socket.on('HELLO', (data) => {
+    console.log('Hello' + data.name);
     var game = activeGames[data.game];
+    if (game == null)return;
     socket.player = data.name;
     socket.game = data.game;
 
@@ -88,6 +90,7 @@ io.sockets.on('connection', (socket) => {
 
   socket.on('reHELLO', ()=> {
     sockets[socket.game][socket.player] = socket;
+    socket.join(activeGames[socket.game].id);
   });
 
   socket.on('submit', (data) => {

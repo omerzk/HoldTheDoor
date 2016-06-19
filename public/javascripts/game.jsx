@@ -1,7 +1,7 @@
 /**
  * Created by omer on 15/06/2016.
  */
-var serverAddr = 'http://localhost:3000';
+var serverAddr = 'http://localhost:8080';
 var socket = io.connect(serverAddr);
 var mySentence = $('#mySentence');
 var clock = new Clock("#clockdiv", endTurn);
@@ -22,7 +22,7 @@ $(document).ready(()=> {
 function endTurn(sentence) {
     clock.stop();
     console.log("endTurn" + sentence);
-    mySentence.disabled = true;
+    mySentence.prop('disabled', true);
     mySentence.val('');
     if (sentence !== null)socket.emit('submit', {sentence: sentence});
 }
@@ -42,7 +42,7 @@ socket.on('turn', (data) => {
 socket.on('start turn', (data) => {
     var sentence = data.lastSentence;
     if (!mySentence.disabled) clock.stop();//in case the server crashed - gives the user an extra 2 minutes.
-    mySentence.disabled = false;
+    mySentence.prop('disabled', false);
     console.log(lastSentence.val());
     lastSentence.val(sentence);
     var start = new Date();

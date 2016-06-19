@@ -45,7 +45,7 @@ db.once('open', function () {
       activeGames[gameName] = newGame;
     }
   });
-
+  console.log("post db")
 
 /**
  * Create HTTPs server.

@@ -70,7 +70,7 @@ app.post('/kill' , function (req, res) {
 });
 
 
-app.post('/games', function (req, res) {
+app.use('/games', function (req, res) {
   //TODO: why is this called every time newgame is called?
   res.render('ActiveGames.jade');
 });

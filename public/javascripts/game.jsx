@@ -1,7 +1,7 @@
 /**
  * Created by omer on 15/06/2016.
  */
-var serverAddr = 'http://sentgame.southeastasia.cloudapp.azure.com';
+var serverAddr = 'localhost';
 var socket = io.connect(serverAddr);
 var mySentence = $('#mySentence');
 var clock = new Clock("#clockdiv", endTurn);
@@ -11,6 +11,12 @@ var curPlayer = null;
 var gameName = sessionStorage.getItem('gameName');
 var playerName = sessionStorage.getItem('name');
 
+if (playerName == null) {
+    window.location = '/';
+}
+else if (gameName == null) {
+    window.location = '/games';
+}
 
 $(document).ready(()=> {
     $('#inputForm').submit(function submitSentence(evt) {
@@ -61,6 +67,7 @@ socket.on('Game End', (data) => {
     lastSentence.hide();
     $('#butt').hide();
 });
+
 
 //window.onbeforeunload =
 

@@ -96,7 +96,7 @@ server.on('listening', onListening);
   socket.on('HELLO', (data) => {
     console.log('Hello' + data.name);
     var game = activeGames[data.game];
-    if (game == null)return;
+    if (game == null)return socket.emit('OUT');
     socket.player = data.name;
     socket.game = data.game;
 
@@ -125,7 +125,7 @@ server.on('listening', onListening);
   });
 
   socket.on('submit', (data) => {
-    if (activeGames[socket.game] !== null)
+    if (activeGames[socket.game] != null)
       activeGames[socket.game].submitSentence(data.sentence, socket.player);
   });
 

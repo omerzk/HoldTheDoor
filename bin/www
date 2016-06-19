@@ -6,7 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
-var https = require('http');
+var https = require('https');
 var fs = require('fs');
 var mongoose = require('mongoose');
 var Game = require('../Game.js');
@@ -19,7 +19,7 @@ var port = normalizePort(process.env.PORT || '80');
 app.set('port', port);
 var server;
 // Create options for encryption
-var pathToCerts = '/etc/letsencrypt/live/sentencegameomer.tk';
+var pathToCerts = 'etc/letsencrypt/live/sentgame.tk';
 //var options = {
 //  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
 //  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
@@ -38,11 +38,11 @@ io = null;
 var LEX = require('letsencrypt-express');
 
 var lex = LEX.create({
-  configDir: require('os').homedir() + '/letsencrypt/etc',
+  configDir: pathToCerts,//require('os').homedir() + '/letsencrypt/etc',
   approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
     // Note: this is the place to check your database to get the user associated with this domain
     cb(null, {
-      domains: ['sentencegameomer.tk'],
+      domains: ['sentgame.tk'],
       email: 'Rom.cohen90@gmail.com',
       agreeTos: true
     });

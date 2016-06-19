@@ -135,10 +135,10 @@ server.on('listening', onListening);
       game.removePlayer(socket.player);
       if (!game.players.length > 0) {
         GameModel.findOne({id: game.id}, function (err, gameFound) {
-          if (err) throw err;
+          if (err) return console.log(err);
           gameFound.players = game.players;
           gameFound.save(function (err) {
-            if (err) throw err;
+            if (err) return console.log(err);
             console.log('Game successfully added a player to DB!');
           });
         });
@@ -195,7 +195,7 @@ function onError(error) {
       process.exit(1);
       break;
     default:
-      throw error;
+      return console.log(error);
   }
 }
 

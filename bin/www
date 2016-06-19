@@ -73,7 +73,7 @@ db.once('open', function () {
   /**
    * Create HTTP server.
    */
-  var server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
+  server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
 
   io = require('socket.io')(server);
   console.log("post db2")

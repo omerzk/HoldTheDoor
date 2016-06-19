@@ -57,6 +57,9 @@ socket.on('Game End', (data) => {
     var storyArea = $('#storyArea');
     storyArea.show();
     storyArea.val(data.story);
+    mySentence.hide();
+    lastSentence.hide();
+    $('#butt').hide();
 });
 
 //window.onbeforeunload =

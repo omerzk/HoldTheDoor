@@ -30,28 +30,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use('/public',express.static(path.join(__dirname, 'public')));
 
-
-var dbReady = false;
-
-//Init remote mongodb
-mongoose.connect('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
-var db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
-  log("DB ready");
-  dbReady = true;
-  GameModel.find({},function(err, mongoGames) {
-    for (i = 0; i < mongoGames.length; i++) {
-      var gameName = mongoGames[i].id;
-      var newGame = new Game(mongoGames[i].turnsLeft, mongoGames[i].id);
-      newGame.updatefromDB(mongoGames[i]);
-      activeGames[gameName] = newGame;
-    }
-  });
-});
-
-
 app.get('/', function (req, res) {
   res.render('enter.jade');
 });
@@ -109,16 +87,10 @@ app.post('/joinGame', function joinGame(req, res) {
     res.redirect('/games');
   }
   else if (activeGames[gameName].players.indexOf(playerName) === -1) {
-    GameModel.findOne({id: gameName}, function (err, gameFound) {
-        if (err) throw err;
-        gameFound.players.push(playerName);
-        gameFound.save(function (err) {
-          if (err) throw err;
-          console.log('Game successfully added a player to DB!');
-        });
-    });
+    res.status(200).send();
+  } else {
+    res.status(409).send();
   }
-  res.status(200).send();
 });
 
 

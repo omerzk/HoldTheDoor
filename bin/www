@@ -8,13 +8,16 @@ var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
 var https = require('http');
 var fs = require('fs');
+var mongoose = require('mongoose');
+var Game = require('../Game.js');
+var GameModel = require('../models/Game.js');
 /**
  * Get port from environment and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-
+var server;
 // Create options for encryption
 var pathToCerts = '/etc/letsencrypt/live/sentencegameomer.tk';
 //var options = {
@@ -23,10 +26,31 @@ var pathToCerts = '/etc/letsencrypt/live/sentencegameomer.tk';
 //  ca: fs.readFileSync(pathToCerts + '/chain.pem')
 //}
 
+
+var dbReady = false;
+
+//Init remote mongodb
+mongoose.connect('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
+var db = mongoose.connection;
+io = null;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  console.log("DB ready");
+  dbReady = true;
+  GameModel.find({}, function (err, mongoGames) {
+    for (i = 0; i < mongoGames.length; i++) {
+      var gameName = mongoGames[i].id;
+      var newGame = new Game(mongoGames[i].turnsLeft, mongoGames[i].id);
+      newGame.updatefromDB(mongoGames[i]);
+      activeGames[gameName] = newGame;
+    }
+  });
+
+
 /**
  * Create HTTPs server.
  */
-var server = https.createServer(app);
+server = https.createServer(app);
 io = require('socket.io')(server);
 
 /**
@@ -41,21 +65,29 @@ io.sockets.on('connection', (socket) => {
   console.log('a user has connected');
 
   socket.on('HELLO', (data) => {
+    var game = activeGames[data.game];
     socket.player = data.name;
     socket.game = data.game;
-    socket.join(data.game);        // put socket in a specific game channel
-    sockets[socket.player] = socket;
-    var game = activeGames[data.game];
-    if (game.players.indexOf(socket.player) === -1){
-      game.addPlayer(socket.player);
-    }
-    console.log("players", game.players, game.players.length);
 
-    io.sockets.in(game.id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
+    if (game.players.indexOf(socket.player) === -1){
+      socket.join(data.game);        // put socket in a specific game channel
+      sockets[socket.game][socket.player] = socket;
+      game.addPlayer(socket.player);
+      GameModel.findOne({id: game.id}, function (err, gameFound) {
+        if (err) throw err;
+        gameFound.players.push(socket.player);
+        gameFound.save(function (err) {
+          if (err) throw err;
+          console.log('Game successfully added a player to DB!');
+        });
+      });
+      console.log("players", game.players, game.players.length);
+      io.sockets.in(game.id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
+    }
   });
 
   socket.on('reHELLO', ()=> {
-    sockets[socket.player] = socket;
+    sockets[socket.game][socket.player] = socket;
   });
 
   socket.on('submit', (data) => {
@@ -63,9 +95,26 @@ io.sockets.on('connection', (socket) => {
       activeGames[socket.game].submitSentence(data.sentence, socket.player);
   });
 
+  socket.on('disconnect', ()=> {
+    var game = activeGames[socket.game];
+    if (game != null) {
+      game.removePlayer(socket.player);
+      GameModel.findOne({id: game.id}, function (err, gameFound) {
+        if (err) throw err;
+        gameFound.players = game.players;
+        gameFound.save(function (err) {
+          if (err) throw err;
+          console.log('Game successfully added a player to DB!');
+        });
+      });
+      io.sockets.in(game.id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
+      console.log('Disconnect', socket.player)
+    }
+
+  });
+
 });
-
-
+});
 /**
  * Normalize a port into a number, string, or false.
  */

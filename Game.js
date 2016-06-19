@@ -11,6 +11,7 @@ function Game(lines, id) {
     var that = this;
     var flow;
     var first = true;
+    sockets[id] = {};
 
     this.updatefromDB = function (mongoGame) {
         this.id = mongoGame.id;
@@ -41,7 +42,7 @@ function Game(lines, id) {
             console.log("pre-next");
             var next = nextPlayer();
             console.log("next", next);
-            if (sockets[that.players[next]] == null) endGame();//no more players in game
+            if (sockets[that.id][that.players[next]] == null) endGame();//no more players in game
             else turn = next;
 
             console.log('id: ' + that.id);
@@ -57,7 +58,7 @@ function Game(lines, id) {
                 });
             });
             io.sockets.in(that.id).emit("turn", {turn: turn});
-            sockets[that.players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
+            sockets[that.id][that.players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
             flow = setTimeout(advance, turnDuration);
         }
     }
@@ -102,7 +103,7 @@ function Game(lines, id) {
 
         do {
             next = (turn + 1) % that.players.length;
-        } while (next !== turn && sockets[that.players[next]] == null);
+        } while (next !== turn && sockets[that.id][that.players[next]] == null);
         return next;
     }
 }

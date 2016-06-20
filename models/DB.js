@@ -3,6 +3,7 @@
  */
 var mongoose = require('mongoose');
 var GameModel = require('./Game.js');
+var Game = require('../Game.js');
 
 
 function DB(url) {
@@ -18,8 +19,16 @@ function DB(url) {
         db.once('open', onConnection);
     };
 
-    this.fillGames = function(onFind) {
-        GameModel.find({}, onFind);
+    this.fillGames = function (onFill) {
+        GameModel.find({}, function (err, games) {
+            for (var i = 0; i < games.length; i++) {
+                var gameName = games[i].id;
+                var newGame = new Game(games[i].turnsLeft, games[i].id);
+                newGame.updatefromDB(games[i]);
+                activeGames[gameName] = newGame;
+            }
+            onFill()
+        });
     };
 
     this.findOne = function(id2Find, onFind) {

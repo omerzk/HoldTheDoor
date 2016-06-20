@@ -83,7 +83,6 @@ function Game(lines, id) {
         }
     };
 
-
     this.addPlayer = (player)=> {
         that.players.push(player);
         if (that.players.length == 1) {

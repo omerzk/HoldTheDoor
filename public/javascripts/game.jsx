@@ -1,7 +1,7 @@
 /**
  * Created by omer on 15/06/2016.
  */
-var serverAddr = 'http://localhost:3000/'//'http://sentgame.southeastasia.cloudapp.azure.com/';
+var serverAddr = 'localhost:3000';
 var socket = io.connect(serverAddr);
 
 var mySentence = $('#mySentence');
@@ -62,7 +62,6 @@ socket.on('start turn', (data) => {
     clock.countdown(start);
     mySentence.focus();
     console.log('sentence' + sentence)
-
 });
 
 socket.on('Game End', (data) => {
@@ -91,10 +90,10 @@ class PlayerList extends React.Component {
         );
         socket.on('turn', (data) => {
             console.log('turn event')
-
             curPlayer = data.turn;
             this.setState({playerList: this.state.playerList, curPlayer: curPlayer});
             console.log('turn', curPlayer)
+            if (curPlayer != playerName)backUp = null;
         });
 
         socket.on('reconnect', () => {
@@ -105,7 +104,7 @@ class PlayerList extends React.Component {
 
         socket.on('ackReHello', ()=> {
                 console.log('ackReHello event')
-                if (this.state.playerList[curPlayer] == playerName && backUp != '') {
+            if (this.state.playerList[curPlayer] == playerName && backUp != null) {
                     socket.emit('submit', {sentence: backUp})
                     console.log('emit backup');
                 }

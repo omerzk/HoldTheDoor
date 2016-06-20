@@ -1,5 +1,5 @@
 var GameModel = require('./models/Game.js');
-//var mongoose = require('mongoose');
+var www = require('./bin/www');
 
 function Game(lines, id) {
     this.id = id;
@@ -13,12 +13,12 @@ function Game(lines, id) {
     var first = true;
     sockets[id] = {};
 
-    this.updatefromDB = function (mongoGame) {
-        this.id = mongoGame.id;
-        story = mongoGame.story;
-        turn = mongoGame.curTurn;
-        this.players = mongoGame.players;
-        this.linesLeft = mongoGame.turnsLeft;
+    this.updatefromDB = function (dbGame) {
+        this.id = dbGame.id;
+        story = dbGame.story;
+        turn = dbGame.curTurn;
+        this.players = dbGame.players;
+        this.linesLeft = dbGame.turnsLeft;
     };
 
     function endGame() {
@@ -26,7 +26,7 @@ function Game(lines, id) {
         // Find and delete this Game from the DB
         var st = fullStory();
         io.sockets.in(that.id).emit('Game End', {story: st});
-        GameModel.findOne({id: that.id}, function (err, gameFound) {
+        dataBase.findOne(that.id, function (err, gameFound) {
             if (err || gameFound == null)  return console.log(err);
             gameFound.remove(function (err) {
                 if (err) return console.log(err);
@@ -50,7 +50,7 @@ function Game(lines, id) {
             else turn = next;
 
             console.log('id: ' + that.id);
-            GameModel.findOne({id: that.id}, function (err, gameFound) {
+            dataBase.findOne(that.id, function (err, gameFound) {
                 if (err) return console.log(err);
                 //console.log(gameFound);
                 gameFound.turnsLeft = that.linesLeft;
@@ -72,7 +72,7 @@ function Game(lines, id) {
 
     this.submitSentence = function (sentence, player) {
         //console.assert(this.playerNum > 2, {message: "less then 2 players", playerNumber: this.playerNum});
-        console.log('submit', player, that.players[turn])
+        console.log('submit', player, that.players[turn]);
         if (player === that.players[turn]) {
             clearTimeout(flow);
             if (sentence != null && !done()) {
@@ -93,7 +93,9 @@ function Game(lines, id) {
             sockets[that.id][player].emit('turn', {turn: turn});
         }
     };
+
     this.currentPlayer = ()=> that.players[turn];
+
     this.removePlayer = (playerName) => {
         var player = this.currentPlayer();
         remove(that.players, playerName);
@@ -101,7 +103,7 @@ function Game(lines, id) {
         if (player == playerName) advance();
 
 
-    }
+    };
 
     function done() {
         return that.linesLeft == 0;

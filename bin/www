@@ -6,16 +6,15 @@
 
 var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
-var https = require('http');
+var http = require('http');
 var fs = require('fs');
-var mongoose = require('mongoose');
 var Game = require('../Game.js');
-var GameModel = require('../models/Game.js');
+var DB = require('../models/DB.js');
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '80');
+var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 var server;
 // Create options for encryption
@@ -26,59 +25,33 @@ var pathToCerts = 'etc/letsencrypt/live/sentgame.tk';
 //  ca: fs.readFileSync(pathToCerts + '/chain.pem')
 //}
 
+//
+//var dbReady = false;
 
-var dbReady = false;
-
-//Init remote mongodb
-mongoose.connect('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
-var db = mongoose.connection;
-io = null;
-
-//inint let'sencrypt struct
-var LEX = require('letsencrypt-express');
-
-var lex = LEX.create({
-  configDir: pathToCerts,//require('os').homedir() + '/letsencrypt/etc',
-  approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
-    // Note: this is the place to check your database to get the user associated with this domain
-    cb(null, {
-      domains: ['sentgame.tk'],
-      email: 'Rom.cohen90@gmail.com',
-      agreeTos: true
-    });
-  }
-});
-
-
-
-db.on('error', console.error.bind(console, 'connection error:'));
-
-db.once('open', function () {
+//Init remote DB
+dataBase = new DB('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
+dataBase.connect(function () {
   console.log("DB ready");
-  dbReady = true;
-  GameModel.find({}, function (err, mongoGames) {
-    for (i = 0; i < mongoGames.length; i++) {
-      var gameName = mongoGames[i].id;
-      var newGame = new Game(mongoGames[i].turnsLeft, mongoGames[i].id);
-      newGame.updatefromDB(mongoGames[i]);
+  dataBase.fillGames( function (err, games) {
+    for (i = 0; i < games.length; i++) {
+      var gameName = games[i].id;
+      var newGame = new Game(games[i].turnsLeft, games[i].id);
+      newGame.updatefromDB(games[i]);
       activeGames[gameName] = newGame;
     }
     Start()
   });
-  console.log("post db")
-
-  /**
-   * Create HTTPs server.
-   */
-  server = https.createServer(app);
+  console.log("post db");
 
   /**
    * Create HTTP server.
    */
-    //server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
-
+  server = http.createServer(app);
 
 });
+
+io = null;
+
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -164,7 +137,7 @@ function Start() {
         socket.join(data.game);        // put socket in a specific game channel
         sockets[socket.game][socket.player] = socket;
         game.addPlayer(socket.player);
-        GameModel.findOne({id: game.id}, function (err, gameFound) {
+        dataBase.findOne(game.id, function (err, gameFound) {
           if (err) throw err;
           gameFound.players.push(socket.player);
           gameFound.save(function (err) {
@@ -194,7 +167,7 @@ function Start() {
       if (game != null) {
         game.removePlayer(socket.player);
         if (!game.players.length > 0) {
-          GameModel.findOne({id: game.id}, function (err, gameFound) {
+          dataBase.findOne(game.id, function (err, gameFound) {
             if (err) return console.log(err);
             gameFound.players = game.players;
             gameFound.save(function (err) {
@@ -211,3 +184,5 @@ function Start() {
 
   });
 }
+
+module.exports = dataBase;

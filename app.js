@@ -1,12 +1,9 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var connect = require('connect');
-var session = require('express-session');
-var mongoose = require('mongoose');
 var Game = require('./Game.js');
 var GameModel = require('./models/Game.js');
 var Account = require('./models/account.js');
@@ -22,8 +19,6 @@ sockets = {};
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -46,7 +41,7 @@ app.post('/games/newGame', function (req, res) {
     var gameName = req.body.gamename;
     if (activeGames[gameName] == null) {
       var lines = parseInt(req.body.turns);
-      var mongoGame = new GameModel({
+      var gameModel = new GameModel({
         id: gameName,
         turnsLeft: lines,
         curTurn: 0,
@@ -72,7 +67,6 @@ app.post('/kill' , function (req, res) {
 
 
 app.use('/games', function (req, res) {
-  //TODO: why is this called every time newgame is called?
   res.render('ActiveGames.jade');
 });
 

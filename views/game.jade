@@ -21,13 +21,14 @@ html
             div
                 span.seconds
                 .smalltext Seconds
-
+        h1#gameName
+        #playerListContainer
+            script(type="text/babel" src='public/javascripts/game.jsx')
         #gamediv
-            input#lastSentence(type='text', disabled='')
             form(name="sentence", id='inputForm')
-                input#mySentence(type='text', required='')
+                input#lastSentence(type='text', disabled='')
+                input#mySentence(type='text', placeholder='Next Sentence',required='')
                 input(id='butt', type="submit", value="Submit")
 
         textarea#storyArea(disabled='' hidden='true')
-        #playerListContainer
-        script(type="text/babel" src='public/javascripts/game.jsx')
+

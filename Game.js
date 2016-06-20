@@ -27,7 +27,7 @@ function Game(lines, id) {
         var st = fullStory();
         io.sockets.in(that.id).emit('Game End', {story: st});
         GameModel.findOne({id: that.id}, function (err, gameFound) {
-            if (err)  return console.log(err);
+            if (err || gameFound == null)  return console.log(err);
             gameFound.remove(function (err) {
                 if (err) return console.log(err);
                 console.log('Game successfully deleted!');
@@ -39,7 +39,7 @@ function Game(lines, id) {
             endGame();
         }
         else {
-            console.log("pre-next");
+            console.log("pre-next", that.players.length);
             var next = nextPlayer();
             console.log("next", next);
             if (sockets[that.id][that.players[next]] == null) endGame();//no more players in game
@@ -58,7 +58,10 @@ function Game(lines, id) {
                 });
             });
             io.sockets.in(that.id).emit("turn", {turn: turn});
-            sockets[that.id][that.players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
+            if (sockets[that.id][that.players[turn]] != null) {
+                console.log('start!')
+                sockets[that.id][that.players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
+            }
             flow = setTimeout(advance, turnDuration);
         }
     }
@@ -81,6 +84,9 @@ function Game(lines, id) {
         console.log(that.players)
         if (that.players.length == 1) {
             advance();
+        }
+        else {
+            sockets[that.id][player].emit('turn', {turn: turn});
         }
     };
     this.currentPlayer = ()=> that.players[turn];
@@ -107,7 +113,7 @@ function Game(lines, id) {
         do {
             next = (next + 1) % that.players.length;
         } while (next !== turn && sockets[that.id][that.players[next]] == null);
-        console.log('next done')
+        console.log('next done', sockets[that.id][that.players[next]] != null)
         return next;
     }
 }

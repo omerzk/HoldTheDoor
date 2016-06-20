@@ -1,7 +1,7 @@
 /**
  * Created by omer on 15/06/2016.
  */
-var serverAddr = 'http://sentgame.southeastasia.cloudapp.azure.com/';
+var serverAddr = 'localhost';
 var socket = io.connect(serverAddr);
 
 var mySentence = $('#mySentence');
@@ -19,6 +19,7 @@ else if (gameName == null) {
 }
 
 $(document).ready(()=> {
+    $('#gameName').text("Game: " + gameName);
     $('#inputForm').submit(function submitSentence(evt) {
         evt.preventDefault();
         endTurn(mySentence.val());
@@ -30,6 +31,7 @@ function endTurn(sentence) {
     console.log("endTurn" + sentence);
     mySentence.prop('disabled', true);
     mySentence.val('');
+    mySentence.blur()
     if (sentence !== null)socket.emit('submit', {sentence: sentence});
 }
 
@@ -41,9 +43,7 @@ socket.on('reconnect', () => {
     socket.emit("reHELLO", {name: playerName, game: gameName});
 });
 
-socket.on('turn', (data) => {
-    curPlayer = data.nextPlayer;
-});
+
 
 socket.on('start turn', (data) => {
     var sentence = data.lastSentence;
@@ -54,6 +54,7 @@ socket.on('start turn', (data) => {
     var start = new Date();
     start.setMinutes(start.getMinutes() + 2);
     clock.countdown(start);
+    mySentence.focus();
     console.log('sentence' + sentence)
 
 });
@@ -81,13 +82,18 @@ class PlayerList extends React.Component {
             console.log(data.playerList)
             }
         );
+        socket.on('turn', (data) => {
+            curPlayer = data.turn;
+            this.setState({playerList: this.state.playerList, curPlayer: curPlayer});
+            console.log('turn', curPlayer)
+        });
     }
 
 
     render() {
         console.log(this.state.playerList)
         var players = this.state.playerList.map((playerName, i) => {
-            var style = curPlayer === playerName ? {backgroundColor: '#c37dcc'} : {};
+            var style = curPlayer === i ? {backgroundColor: '#d9ffe6'} : {};
             return (
                 <tr key={i} style={style}>
                     <td data-th="Player">{playerName}</td>

@@ -6,15 +6,9 @@ body {
     font-weight: 100;
 }
 
-h1 {
-    color: #396;
-    font-weight: 100;
-    font-size: 40px;
-    margin: 40px 0px 20px;
-}
 
 /*---------------------------------------------------------------------------------------------------------------------*/
-* {
+span {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -114,3 +108,85 @@ tbody tr:last-child td:last-child {
     border-bottom: 1px solid #FFF;
 }
 
+input::-webkit-input-placeholder, button {
+    font-family: 'roboto', sans-serif;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+h1 {
+    font-family: Courier, sans-serif;
+    height: 40px;
+    width: 30%;
+    font-size: 33px;
+    background: #d9ffe6;
+    font-weight: 300;
+    color: #213146;
+    line-height: 150%;
+    border-radius: 120px 3px 120px 4px;
+}
+
+form {
+    box-sizing: border-box;
+    width: 260px;
+    margin: 100px auto 0;
+    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
+    padding-bottom: 40px;
+    border-radius: 3px;
+    background-color: rgba(219, 255, 231, 0.99);
+}
+
+input {
+    font-size: large;
+    margin: 40px 25px;
+    width: 200px;
+    display: block;
+    border: none;
+    padding: 10px 0;
+    border-bottom: solid 1px #213146;
+    -webkit-transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+    transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+    background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 96%, #1f2f3f 4%);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #3c213f 4%);
+    background-position: -200px 0;
+    background-size: 200px 100%;
+    background-repeat: no-repeat;
+    color: #000000;
+}
+
+input:focus, input:valid {
+    box-shadow: none;
+    outline: none;
+    background-position: 0 0;
+}
+
+input:focus::-webkit-input-placeholder, input:valid::-webkit-input-placeholder {
+    color: #1abc9c;
+    font-size: 11px;
+    -webkit-transform: translateY(-20px);
+    transform: translateY(-20px);
+    visibility: visible !important;
+}
+
+button {
+    border: none;
+    background: #1f2f3f;
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 6px;
+    width: 200px;
+    color: white;
+    margin-left: 25px;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+#PlayerTable {
+    float: left;
+    left: 80px;
+}

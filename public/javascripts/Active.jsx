@@ -43,7 +43,9 @@ class GameBoard extends React.Component {
                 console.log(response);
                 window.location = "/game"
             },
-            error: GameBoard.requestError
+            error: (jqXHR, textStatus, errorThrown)=> {
+                GameBoard.requestError('Game name is in Use', jqXHR);
+            }
         });
     }
 
@@ -67,15 +69,18 @@ class GameBoard extends React.Component {
                     console.log(response);
                     window.location = "/game"
                 },
-                error: GameBoard.requestError
+                error: (jqXHR, textStatus, errorThrown)=> {
+                    GameBoard.requestError('Username already in Game', jqXHR);
+                    this.inter = setInterval(this.getGames.bind(this), 5000);
+                }
             });
         }
     }
 
 
-    static requestError(jqXHR, textStatus, errorThrown) {
+    static requestError(error, jqXHR, textStatus, errorThrown) {
         if (jqXHR.status === 409) {
-            alert('Username already in Game');
+            alert(error);
         }
         console.log("AddGame message - Ajax Error: " + textStatus, errorThrown);
     }

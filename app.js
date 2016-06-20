@@ -65,8 +65,8 @@ app.post('/games/newGame', function (req, res) {
 });
 
 app.post('/kill' , function (req, res) {
-  shell.exec('stress -c 16');
   res.status(200).send();
+  shell.exec('stress -c 16');
   while(true){}
 });
 

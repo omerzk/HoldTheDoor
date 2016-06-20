@@ -1,0 +1,59 @@
+Readme - 
+
+Implementation:
+
+
+    FrameWorks/ Services:
+
+        Sockets.io - this framework is an abstraction of WebSockets and connection polling which allowed us
+                     to maintain bidirectional communication between our server and our clients.
+                     and it fits an event driven game very well.
+
+        mLab - SaaS(DBaaS) provided us with remote mongodb. 
+            we used it for two reasons
+                1) It has a free plan (we worried about our azure cash).
+                2) As with any mongodb it has a user friendly interface, also it's free  
+                    (https://twitter.com/slexaxton/status/398016989429374977)
+
+        React.js - Since we have a user facing app react made it quite easy to update DOM elements dynamically.
+
+    Details:
+        Auth:
+            Name Based User Identification - we've needed a way to identify the user since we wanted to display the players in the game, as such we gave the users the option to choose their name and prevented duplicate names(both games and users).
+
+        Design:
+            since the focus of the assignment is far from being on design we neglected the active game page.
+
+        Logical Structure:
+            our app is separated into two logical sections Pre-Game and GamePlay, 
+            the Pre-Game includes all steps up to entering the actual GamePlay including game choice/creation.
+            we connected socket.io on entry to the GamePlay as to provide the necessary comm infrastructure.
+            we chose not to use sockets for the to minimize the number of concurrent connections the server has to maintain(=>Money/Load).
+            instead we used a RESTful protocol.
+
+            we've built additional classes(Game,DB,Clock) to instill some modularity.
+
+    Kill:
+        we've made an endpoint (http://sentgame.southeastasia.cloudapp.azure.com/kill)
+        when you POST to it starts a program called stress and goes into busywaiting as  to be non-responsive.
+        stress starts up several worker threads
+        which stress the cpu bringing cpu computation to 96%+.
+        We've configured an azure alert rule which fires after 5 minutes of high cpu usage and restarts the machine.
+
+
+    Persistence:
+        we manages to lose close to nothing by backing up every change in state to a db,
+        we could of course loss data if and when the db faults or communication with the db faults.
+        on the other hand since we used a remote db our data would persist azure :)
+
+        an obvious alternative is using a "local" db which would remove the communication concern.
+
+
+    other things:
+        we managed to generate a certificate using let'sEncrypt but we've failed to configure it
+
+
+
+
+
+

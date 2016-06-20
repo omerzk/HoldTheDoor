@@ -140,6 +140,7 @@ function Start() {
         io.sockets.in(game.id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
       }
     });
+
     socket.on('reHELLO', ()=> {
       if (sockets[socket.game] != null) {
         sockets[socket.game][socket.player] = socket;

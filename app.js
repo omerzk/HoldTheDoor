@@ -6,15 +6,13 @@ var bodyParser = require('body-parser');
 var connect = require('connect');
 var Game = require('./Game.js');
 var GameModel = require('./models/Game.js');
-var Account = require('./models/account.js');
 var shell = require('shelljs');
 
 var app = express();
-
-////////////////////////////Global/////////////////////////////////////////////////////////////////
+////main state variables.
 activeGames = {};
 sockets = {};
-///////////////////////////////////////////////////////////////////////////////////////////////////
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -24,6 +22,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use('/public',express.static(path.join(__dirname, 'public')));
+
 
 app.get('/', function (req, res) {
   res.render('enter.jade');

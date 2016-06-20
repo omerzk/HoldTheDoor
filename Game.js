@@ -42,7 +42,11 @@ function Game(lines, id) {
             console.log("pre-next", that.players.length);
             var next = nextPlayer();
             console.log("next", next);
-            if (sockets[that.id][that.players[next]] == null) endGame();//no more players in game
+            if (sockets[that.id][that.players[next]] == null) {
+                console.log('next crap', that.id, that.players[next]);
+                return endGame();
+
+            }//no more players in game
             else turn = next;
 
             console.log('id: ' + that.id);
@@ -68,6 +72,7 @@ function Game(lines, id) {
 
     this.submitSentence = function (sentence, player) {
         //console.assert(this.playerNum > 2, {message: "less then 2 players", playerNumber: this.playerNum});
+        console.log('submit', player, that.players[turn])
         if (player === that.players[turn]) {
             clearTimeout(flow);
             if (sentence != null && !done()) {
@@ -81,7 +86,6 @@ function Game(lines, id) {
 
     this.addPlayer = (player)=> {
         that.players.push(player);
-        console.log(that.players)
         if (that.players.length == 1) {
             advance();
         }
@@ -113,7 +117,6 @@ function Game(lines, id) {
         do {
             next = (next + 1) % that.players.length;
         } while (next !== turn && sockets[that.id][that.players[next]] == null);
-        console.log('next done', sockets[that.id][that.players[next]] != null)
         return next;
     }
 }

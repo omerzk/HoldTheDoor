@@ -52,6 +52,7 @@ var lex = LEX.create({
 
 
 db.on('error', console.error.bind(console, 'connection error:'));
+
 db.once('open', function () {
   console.log("DB ready");
   dbReady = true;
@@ -62,6 +63,7 @@ db.once('open', function () {
       newGame.updatefromDB(mongoGames[i]);
       activeGames[gameName] = newGame;
     }
+    Start()
   });
   console.log("post db")
 
@@ -75,81 +77,7 @@ db.once('open', function () {
    */
     //server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
 
-  io = require('socket.io')(server);
-  console.log("post db2")
 
-  /**
-   * Listen on provided port, on all network interfaces.
-   */
-  console.log("post db3")
-
-  server.listen(port);
-  console.log("post db4")
-
-  server.on('error', onError);
-server.on('listening', onListening);
-
-
-  io.sockets.on('connection', (socket) => {
-  console.log('a user has connected');
-
-  socket.on('HELLO', (data) => {
-    console.log('Hello' + data.name);
-    var game = activeGames[data.game];
-    if (game == null)return;
-    socket.player = data.name;
-    socket.game = data.game;
-
-    if (game.players.indexOf(socket.player) === -1){
-      socket.join(data.game);        // put socket in a specific game channel
-      sockets[socket.game][socket.player] = socket;
-      game.addPlayer(socket.player);
-      GameModel.findOne({id: game.id}, function (err, gameFound) {
-        if (err) throw err;
-        gameFound.players.push(socket.player);
-        gameFound.save(function (err) {
-          if (err) throw err;
-          console.log('Game successfully added a player to DB!');
-        });
-      });
-      console.log("players", game.players, game.players.length);
-      io.sockets.in(game.id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
-    }
-  });
-
-  socket.on('reHELLO', ()=> {
-    if (sockets[socket.game] != null) {
-      sockets[socket.game][socket.player] = socket;
-      socket.join(activeGames[socket.game].id);
-    }
-  });
-
-  socket.on('submit', (data) => {
-    if (activeGames[socket.game] != null)
-      activeGames[socket.game].submitSentence(data.sentence, socket.player);
-  });
-
-  socket.on('disconnect', ()=> {
-    var game = activeGames[socket.game];
-    if (game != null) {
-      game.removePlayer(socket.player);
-      if (!game.players.length > 0) {
-        GameModel.findOne({id: game.id}, function (err, gameFound) {
-          if (err) return console.log(err);
-          gameFound.players = game.players;
-          gameFound.save(function (err) {
-            if (err) return console.log(err);
-            console.log('Game successfully added a player to DB!');
-          });
-        });
-      }
-      io.sockets.in(game.id).emit('Player List', {playerList: game.players});//update players
-      console.log('Disconnect', socket.player)
-    }
-
-  });
-
-});
 });
 /**
  * Normalize a port into a number, string, or false.
@@ -209,4 +137,77 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   console.log('Listening on ' + bind);
+}
+
+function Start() {
+  io = require('socket.io')(server);
+
+  /**
+   * Listen on provided port, on all network interfaces.
+   */
+
+  server.listen(port);
+
+  server.on('error', onError);
+  server.on('listening', onListening);
+
+
+  io.sockets.on('connection', (socket) => {
+    console.log('a user has connected');
+
+    socket.on('HELLO', (data) => {
+      var game = activeGames[data.game];
+      if (game == null)return;
+      socket.player = data.name;
+      socket.game = data.game;
+      if (game.players.indexOf(socket.player) === -1) {
+        socket.join(data.game);        // put socket in a specific game channel
+        sockets[socket.game][socket.player] = socket;
+        game.addPlayer(socket.player);
+        GameModel.findOne({id: game.id}, function (err, gameFound) {
+          if (err) throw err;
+          gameFound.players.push(socket.player);
+          gameFound.save(function (err) {
+            if (err) throw err;
+            console.log('Game successfully added a player to DB!');
+          });
+        });
+        console.log("players", game.players, game.players.length);
+        io.sockets.in(game.id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
+      }
+    });
+    socket.on('reHELLO', ()=> {
+      if (sockets[socket.game] != null) {
+        sockets[socket.game][socket.player] = socket;
+        socket.join(socket.game);
+      }
+      socket.emit('ackReHello');
+    });
+
+    socket.on('submit', (data) => {
+      if (activeGames[socket.game] != null)
+        activeGames[socket.game].submitSentence(data.sentence, socket.player);
+    });
+
+    socket.on('disconnect', ()=> {
+      var game = activeGames[socket.game];
+      if (game != null) {
+        game.removePlayer(socket.player);
+        if (!game.players.length > 0) {
+          GameModel.findOne({id: game.id}, function (err, gameFound) {
+            if (err) return console.log(err);
+            gameFound.players = game.players;
+            gameFound.save(function (err) {
+              if (err) return console.log(err);
+              console.log('Game successfully added a player to DB!');
+            });
+          });
+        }
+        io.sockets.in(game.id).emit('Player List', {playerList: game.players});//update players
+        console.log('Disconnect', socket.player)
+      }
+
+    });
+
+  });
 }

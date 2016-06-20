@@ -1,7 +1,7 @@
 /**
  * Created by omer on 15/06/2016.
  */
-var serverAddr = 'http://sentgame.southeastasia.cloudapp.azure.com/';
+var serverAddr = 'localhost';
 var socket = io.connect(serverAddr);
 
 var mySentence = $('#mySentence');
@@ -11,6 +11,7 @@ var curPlayer = null;
 var gameName = sessionStorage.getItem('gameName');
 var playerName = sessionStorage.getItem('name');
 var backUp = '';
+var connected = false;
 if (playerName == null) {
     window.location = '/';
 }
@@ -33,18 +34,17 @@ function endTurn(sentence) {
     mySentence.prop('disabled', true);
     mySentence.val('');
     mySentence.blur()
-    if (sentence !== null)socket.emit('submit', {sentence: sentence});
+    if (sentence !== null && connected)socket.emit('submit', {sentence: sentence});
 }
 
 socket.on('connect', () => {
+    connected = true;
     socket.emit("HELLO", {name: playerName, game: gameName});
 });
 
-socket.on('reconnect', () => {
-    socket.emit("reHELLO", {name: playerName, game: gameName});
-    if (that.state.playerList[turn] == playerName && backUp != '') {
-        socket.emit('submit', {sentence: backUp})
-    }
+
+socket.on('disconnect', () => {
+    connected = false;
 });
 
 
@@ -88,10 +88,28 @@ class PlayerList extends React.Component {
             }
         );
         socket.on('turn', (data) => {
+            console.log('turn event')
+
             curPlayer = data.turn;
             this.setState({playerList: this.state.playerList, curPlayer: curPlayer});
             console.log('turn', curPlayer)
         });
+
+        socket.on('reconnect', () => {
+            console.log('reHello event')
+
+            socket.emit("reHELLO", {name: playerName, game: gameName});
+        });
+
+        socket.on('ackReHello', ()=> {
+                console.log('ackReHello event')
+                if (this.state.playerList[curPlayer] == playerName && backUp != '') {
+                    socket.emit('submit', {sentence: backUp})
+                    console.log('emit backup');
+                }
+            }
+        );
+
     }
 
 

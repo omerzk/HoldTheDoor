@@ -56,312 +56,78 @@ a {
     -ms-box-sizing: border-box;
 }
 
-/* Element Variables
-   Change @bar-w to adjust entire button size.
-*/
-/* Start Styles - Side Menu
-***************************************************************/
-.panel {
-    -webkit-transition: 0.2s;
-    -moz-transition: 0.2s;
-    -o-transition: 0.2s;
-    transition: 0.2s;
-    transition: all 0.2s ease-in-out;
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    -ms-transition: all 0.2s ease-in-out;
-    position: fixed;
-    z-index: 9999;
-    top: 0;
-    height: 100%;
-    width: 450px;
-    /* ul */
-    /* Ninja Button styles */
-    /* Ninja Button */
-    /* Ninja Button Active */
+table {
+    border-collapse: separate;
+    background: #fff;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    margin: 50px auto;
+    -moz-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
 }
 
-.panel ul {
-    list-style-type: none;
-    position: absolute;
-    z-index: 1;
-    margin: 0;
-    padding: 0;
-    top: 50%;
-    left: 60px;
-    right: 60px;
-    height: auto;
+thead {
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+thead th {
+    font-family: 'Patua One', cursive;
+    font-size: 16px;
+    font-weight: 400;
+    color: #fff;
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
     text-align: left;
-    /* li & a */
+    padding: 20px;
+    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzY0NmY3ZiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzRhNTU2NCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+    background-size: 100%;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #646f7f), color-stop(100%, #4a5564));
+    background-image: -moz-linear-gradient(#646f7f, #4a5564);
+    background-image: -webkit-linear-gradient(#646f7f, #4a5564);
+    background-image: linear-gradient(#646f7f, #4a5564);
+    border-top: 1px solid #858d99;
 }
 
-.panel ul li,
-.panel ul a {
-    display: inline-block;
-    float: left;
-    width: 100%;
-    line-height: 1.4;
-    padding: 0;
-    font-weight: 200;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+thead th:first-child {
+    -moz-border-radius-topleft: 5px;
+    -webkit-border-top-left-radius: 5px;
+    border-top-left-radius: 5px;
 }
 
-.panel ul li.menu-label {
-    font-size: 16px;
-    margin: 30px 0 10px 0;
-    text-transform: lowercase;
+thead th:last-child {
+    -moz-border-radius-topright: 5px;
+    -webkit-border-top-right-radius: 5px;
+    border-top-right-radius: 5px;
 }
 
-.panel ul li.menu-label:first-child {
-    margin-top: 0;
+tbody tr td {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    color: #5f6062;
+    font-size: 13px;
+    padding: 20px 20px 20px 20px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-.panel ul a {
-    font-size: 22px;
-    text-transform: uppercase;
+tbody tr:nth-child(2n) {
+    background: #f0f3f5;
 }
 
-.panel ul li.menu-contacts a {
-    font-size: 16px;
-    text-transform: inherit;
+tbody tr:last-child td {
+    border-bottom: none;
 }
 
-.panel .ninja-btn {
-    -webkit-transition: 0.2s;
-    -moz-transition: 0.2s;
-    -o-transition: 0.2s;
-    transition: 0.2s;
-    transition: all 0.2s ease-in-out;
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    -ms-transition: all 0.2s ease-in-out;
-    display: inline-block;
-    float: left;
-    cursor: pointer;
-    padding: 34.28571429px 30px;
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    width: 30px;
-    height: 20.18181818px;
+tbody tr:last-child td:first-child {
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    border-bottom-left-radius: 5px;
 }
 
-.panel .ninja-btn span,
-.panel .ninja-btn span:before,
-.panel .ninja-btn span:after {
-    -webkit-transition: 0.3s;
-    -moz-transition: 0.3s;
-    -o-transition: 0.3s;
-    transition: 0.3s;
-    transition: all 0.3s ease-in-out;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    width: 30px;
-    height: 2px;
+tbody tr:last-child td:last-child {
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
-
-.panel .ninja-btn span {
-    position: relative;
-    display: inline-block;
-    float: left;
-    margin-top: 9.09090909px;
-}
-
-.panel .ninja-btn span:before,
-.panel .ninja-btn span:after {
-    content: "";
-    position: absolute;
-    left: 0;
-}
-
-.panel .ninja-btn span:before {
-    top: -9.09090909px;
-}
-
-.panel .ninja-btn span:after {
-    top: 9.09090909px;
-}
-
-.panel .ninja-btn.active span {
-    background-color: transparent;
-}
-
-.panel .ninja-btn.active span:before,
-.panel .ninja-btn.active span:after {
-    top: 0;
-}
-
-.panel .ninja-btn.active span:before {
-    transform: rotate(-135deg);
-    -webkit-transform: rotate(-135deg);
-    -moz-transform: rotate(-135deg);
-    -o-transform: rotate(-135deg);
-    -ms-transform: rotate(-135deg);
-}
-
-.panel .ninja-btn.active span:after {
-    -webkit-transition-delay: 0.09s;
-    -moz-transition-delay: 0.09s;
-    -o-transition-delay: 0.09s;
-    -msa-transition-delay: 0.09s;
-    transition-delay: 0.09s;
-    transform: rotate(135deg);
-    -webkit-transform: rotate(135deg);
-    -moz-transform: rotate(135deg);
-    -o-transform: rotate(135deg);
-    -ms-transform: rotate(135deg);
-}
-
-/* Panel */
-.panel-overlay {
-    position: fixed;
-    top: 0;
-    z-index: 9998;
-    width: 100%;
-    height: 100%;
-    display: none;
-    background-color: rgba(0, 0, 0, 0.35);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 0.05)), color-stop(100%, rgba(0, 0, 0, 0.6)));
-    cursor: pointer;
-}
-
-/* overlay */
-.panel-white {
-    background-color: #FFFFFF;
-    /* ul */
-}
-
-.panel-white ul {
-    /* li */
-}
-
-.panel-white ul li,
-.panel-white ul a {
-    color: #8e8e93;
-}
-
-.panel-white ul li a:hover,
-.panel-white ul li.active a {
-    color: #007aff;
-}
-
-.panel-white .ninja-btn {
-    background-color: #FFFFFF;
-}
-
-.panel-white .ninja-btn span,
-.panel-white .ninja-btn span:before,
-.panel-white .ninja-btn span:after {
-    background-color: #007aff;
-}
-
-/* panel white */
-.panel-black {
-    background-color: #000000;
-    /* ul */
-}
-
-.panel-black ul {
-    /* li */
-}
-
-.panel-black ul li,
-.panel-black ul a {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.panel-black ul li a:hover,
-.panel-black ul li.active a {
-    color: #FFFFFF;
-}
-
-.panel-black .ninja-btn {
-    background-color: #000000;
-}
-
-.panel-black .ninja-btn span,
-.panel-black .ninja-btn span:before,
-.panel-black .ninja-btn span:after {
-    background-color: #007aff;
-}
-
-/* panel black */
-.panel-brand {
-    background-color: #007aff;
-    /* ul */
-    /*
-    .ninja-btn.active span:before,
-    .ninja-btn.active span:after {
-      background-color: rgba( 0, 0, 0, 0.50 );
-    }*/
-}
-
-.panel-brand ul {
-    /* li */
-}
-
-.panel-brand ul li,
-.panel-brand ul a {
-    color: rgba(0, 0, 0, 0.5);
-}
-
-.panel-brand ul li a:hover,
-.panel-brand ul li.active a {
-    color: #FFFFFF;
-}
-
-.panel-brand .ninja-btn {
-    background-color: #007aff;
-}
-
-.panel-brand .ninja-btn span,
-.panel-brand .ninja-btn span:before,
-.panel-brand .ninja-btn span:after {
-    background-color: #FFFFFF;
-}
-
-/* panel brand */
-.panel.left {
-    left: -450px;
-}
-
-.panel.left .ninja-btn {
-    left: 100%;
-}
-
-/* Panel Left Active */
-.panel.left.active {
-    left: 0;
-}
-
-.panel.left.active .ninja-btn {
-    left: 100%;
-    margin-left: -90px;
-}
-
-/* Panel Menu Active */
-.panel.right {
-    right: -450px;
-}
-
-.panel.right .ninja-btn {
-    right: 100%;
-}
-
-/* Panel Right Active */
-.panel.right.active {
-    right: 0;
-}
-
-.panel.right.active .ninja-btn {
-    right: 100%;
-    margin-right: -90px;
-}
-
-/* Panel Menu Active */

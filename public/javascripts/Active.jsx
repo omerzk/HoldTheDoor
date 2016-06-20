@@ -115,7 +115,6 @@ class GameBoard extends React.Component {
                     </ul>
                 </div>
                 <table id="GameBoard">
-                    <caption>GameBoard</caption>
                     <colgroup>
                         <col style={{width:'20%'}}></col>
                         <col style={{width:'20%'}}></col>

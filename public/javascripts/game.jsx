@@ -10,7 +10,7 @@ var lastSentence = $('#lastSentence');
 var curPlayer = null;
 var gameName = sessionStorage.getItem('gameName');
 var playerName = sessionStorage.getItem('name');
-
+var backUp = '';
 if (playerName == null) {
     window.location = '/';
 }
@@ -28,6 +28,7 @@ $(document).ready(()=> {
 
 function endTurn(sentence) {
     clock.stop();
+    backUp = sentence;
     console.log("endTurn" + sentence);
     mySentence.prop('disabled', true);
     mySentence.val('');
@@ -41,6 +42,9 @@ socket.on('connect', () => {
 
 socket.on('reconnect', () => {
     socket.emit("reHELLO", {name: playerName, game: gameName});
+    if (that.state.playerList[turn] == playerName && backUp != '') {
+        socket.emit('submit', {sentence: backUp})
+    }
 });
 
 
@@ -93,10 +97,11 @@ class PlayerList extends React.Component {
     render() {
         console.log(this.state.playerList)
         var players = this.state.playerList.map((playerName, i) => {
-            var style = curPlayer === i ? {backgroundColor: '#d9ffe6'} : {};
+            var style = curPlayer === i ? {backgroundColor: '#d9ffe6', 'font-weight': 'large'} : {};
+            var prefix = curPlayer === i ? 'Current Player: ' : '';
             return (
                 <tr key={i} style={style}>
-                    <td data-th="Player">{playerName}</td>
+                    <td data-th="Player">{prefix + playerName}</td>
                 </tr>
             )
         });

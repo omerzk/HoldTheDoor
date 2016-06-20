@@ -71,6 +71,7 @@ socket.on('Game End', (data) => {
     mySentence.hide();
     lastSentence.hide();
     $('#butt').hide();
+    $('#inputForm').hide();
 });
 
 

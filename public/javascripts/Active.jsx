@@ -3,13 +3,12 @@
  */
 
 class GameBoard extends React.Component {
+
     constructor() {
         super();
         this.state = {activeGames: []};
         this.getGames();
         this.inter = setInterval(this.getGames.bind(this), 5000);
-
-
     }
 
     getGames() {
@@ -19,12 +18,13 @@ class GameBoard extends React.Component {
             'Content-type': 'application/json',
             method: "GET",
             success: (res) => {
-                console.log(res);
                 this.setState({activeGames: res});
             },
             error: GameBoard.requestError
         });
     }
+
+
     newGame(evt) {
         evt.preventDefault();
         clearInterval(this.inter);
@@ -40,10 +40,9 @@ class GameBoard extends React.Component {
             method: "POST",
             success: (response) => {
                 console.log("success");
-                console.log(response);
                 window.location = "/game"
             },
-            error: (jqXHR, textStatus, errorThrown)=> {
+            error: (jqXHR, textStatus, errorThrown) => {
                 GameBoard.requestError('Game name is in Use', jqXHR);
             }
         });
@@ -53,12 +52,12 @@ class GameBoard extends React.Component {
     joinGame(k) {
         return () => {
             clearInterval(this.inter);
-            console.log(k);
-            console.log(this.state.activeGames)
-            var name = sessionStorage.getItem('name');
             console.log('join game');
+
+            var name = sessionStorage.getItem('name');
             var gameName = this.state.activeGames[k].id;
             sessionStorage.setItem("gameName", gameName);
+
             $.ajax({
                 url: '/joinGame',
                 data: ({name: name, gameName: gameName}),
@@ -66,12 +65,11 @@ class GameBoard extends React.Component {
                 method: "POST",
                 success: (response) => {
                     console.log("success");
-                    console.log(response);
                     window.location = "/game"
                 },
                 error: (jqXHR, textStatus, errorThrown)=> {
                     GameBoard.requestError('Username already in Game', jqXHR);
-                    this.inter = setInterval(this.getGames.bind(this), 5000);
+                    this.inter = setInterval(this.getGames.bind(this), 5000);//restart update
                 }
             });
         }
@@ -87,7 +85,6 @@ class GameBoard extends React.Component {
 
 
     render() {
-        console.log(this.state.activeGames)
         var gameList = Object.keys(this.state.activeGames).map((key, i) => {
             return (
                 <tr key={i} onClick={this.joinGame(key)}>
@@ -99,20 +96,12 @@ class GameBoard extends React.Component {
         });
         return (
             <section>
-                <div className="side-panel a">
-                    <ul>
-                        <li>
-                            <ul id="addPanel">
-                                <li >
-                                    <form onSubmit={this.newGame.bind(this)}>
-                                        <input id="GameName" placeholder="GameName" type="text" required/>
-                                        <input id="Turns" placeholder="#Turns" type="number" required/>
-                                        <button>Create</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+                <div className="newGameDiv">
+                    <form onSubmit={this.newGame.bind(this)}>
+                        <input id="GameName" placeholder="GameName" type="text" required/>
+                        <input id="Turns" placeholder="#Turns" type="number" required/>
+                        <button>Create</button>
+                    </form>
                 </div>
                 <table id="GameBoard">
                     <colgroup>

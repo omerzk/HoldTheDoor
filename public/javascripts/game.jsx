@@ -1,7 +1,7 @@
 /**
  * Created by omer on 15/06/2016.
  */
-var serverAddr = 'http://sentgame.southeastasia.cloudapp.azure.com/';
+var serverAddr = 'localhost:3000';
 var socket = io.connect(serverAddr);
 
 var mySentence = $('#mySentence');
@@ -80,6 +80,7 @@ socket.on('Game End', (data) => {
 
 
 class PlayerList extends React.Component {
+
     constructor() {
         super();
         this.state = {playerList: [], curPlayer: null};
@@ -88,6 +89,7 @@ class PlayerList extends React.Component {
             console.log(data.playerList)
             }
         );
+
         socket.on('turn', (data) => {
             console.log('turn event')
             curPlayer = data.turn;
@@ -115,9 +117,8 @@ class PlayerList extends React.Component {
 
 
     render() {
-        console.log(this.state.playerList)
         var players = this.state.playerList.map((playerName, i) => {
-            var style = curPlayer === i ? {backgroundColor: '#d9ffe6', 'font-weight': 'large'} : {};
+            var style = curPlayer === i ? {backgroundColor: '#d9ffe6', fontWeight: 'large'} : {};
             var prefix = curPlayer === i ? 'Current Player: ' : '';
             return (
                 <tr key={i} style={style}>

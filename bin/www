@@ -8,12 +8,12 @@ var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
 var http = require('http');
 var fs = require('fs');
-var DB = require('../models/DB.js');
+var DB = require('../DB.js');
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '80');
+var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 var server;
 // Create options for encryption
@@ -28,15 +28,12 @@ var pathToCerts = 'etc/letsencrypt/live/sentgame.tk';
 //var dbReady = false;
 
 //Init remote DB
-dataBase = new DB('mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi');
-dataBase.connect(function () {
+dataBase = new DB();
+dataBase.init(function () {
   console.log("DB ready");
+  //load db data
   dataBase.fillGames(Start);
-  console.log("post db");
-
-  /**
-   * Create HTTP server.
-   */
+  //create http server
   server = http.createServer(app);
 
 });
@@ -106,10 +103,6 @@ function onListening() {
 function Start() {
   io = require('socket.io')(server);
 
-  /**
-   * Listen on provided port, on all network interfaces.
-   */
-
   server.listen(port);
 
   server.on('error', onError);
@@ -127,16 +120,11 @@ function Start() {
       if (game.players.indexOf(socket.player) === -1) {
         socket.join(data.game);        // put socket in a specific game channel
         sockets[socket.game][socket.player] = socket;
+
         game.addPlayer(socket.player);
-        dataBase.findOne(game.id, function (err, gameFound) {
-          if (err) throw err;
-          gameFound.players.push(socket.player);
-          gameFound.save(function (err) {
-            if (err) throw err;
-            console.log('Game successfully added a player to DB!');
-          });
-        });
-        console.log("players", game.players, game.players.length);
+        dataBase.updateDBPlayers(game);
+
+        //inform players of new player
         io.sockets.in(game.id).emit('Player List', {playerList: activeGames[socket.game].players});//update players
       }
     });
@@ -146,6 +134,7 @@ function Start() {
         sockets[socket.game][socket.player] = socket;
         socket.join(socket.game);
       }
+      //meant to inforce a chain of precedence
       socket.emit('ackReHello');
     });
 
@@ -158,20 +147,10 @@ function Start() {
       var game = activeGames[socket.game];
       if (game != null) {
         game.removePlayer(socket.player);
-        if (!game.players.length > 0) {
-          dataBase.findOne(game.id, function (err, gameFound) {
-            if (err) return console.log(err);
-            gameFound.players = game.players;
-            gameFound.save(function (err) {
-              if (err) return console.log(err);
-              console.log('Game successfully added a player to DB!');
-            });
-          });
-        }
+        dataBase.updateDBPlayers(game)
         io.sockets.in(game.id).emit('Player List', {playerList: game.players});//update players
-        console.log('Disconnect', socket.player)
       }
-
+      console.log('Disconnect', socket.player)
     });
 
   });

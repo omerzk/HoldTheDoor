@@ -9,6 +9,7 @@ var GameModel = require('./models/Game.js');
 var shell = require('shelljs');
 
 var app = express();
+
 ////main state variables.
 activeGames = {};
 sockets = {};
@@ -21,6 +22,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
+
 app.use('/public',express.static(path.join(__dirname, 'public')));
 
 
@@ -28,47 +30,52 @@ app.get('/', function (req, res) {
   res.render('enter.jade');
 });
 
+/**
+ * endpoint for list of active games
+ */
 app.get('/games/active', function (req, res) {
-  log("getting list");
   res.json(activeGames);
 });
 
+/**
+ * endpoint creating a new game
+ */
 app.post('/games/newGame', function (req, res) {
   if (req.body.name == null) res.redirect('/');
-  //else if (req.body.gamename == null || req.body.turns == null) res.redirect('/games');
+  else if (req.body.gamename == null || req.body.turns == null) res.redirect('/games');
   else {
     var gameName = req.body.gamename;
     if (activeGames[gameName] == null) {
       var lines = parseInt(req.body.turns);
-      var gameModel = new GameModel({
-        id: gameName,
-        turnsLeft: lines,
-        curTurn: 0,
-        players: [],
-        story: []
-      }).save(function (err, mongoGame) {
-        if (err) return console.error(err);
-      });
 
-      console.log([lines, gameName]);
+      dataBase.createDBGame(gameName, lines);
       activeGames[gameName] = new Game(lines, gameName);
+
       res.status(200).send()
     }
     else res.status(409).send('Game name occupied')
   }
 });
 
+/**
+ * stress the cpu and make the server go into busy-waiting
+ */
 app.post('/kill' , function (req, res) {
   res.status(200).send();
   shell.exec('stress -c 32');
   while(true){}
 });
 
-
+/**
+ * page showing the active games
+ */
 app.use('/games', function (req, res) {
   res.render('ActiveGames.jade');
 });
 
+/**
+ * gameplay page
+ */
 app.get('/game', function (req, res) {
   res.render('game.jade')
 });
@@ -80,6 +87,7 @@ app.post('/joinGame', function joinGame(req, res) {
   if (gameName == null || activeGames[gameName] == null) {
     res.redirect('/games');
   }
+  //check for name collision
   else if (activeGames[gameName].players.indexOf(playerName) === -1) {
     res.status(200).send();
   } else {

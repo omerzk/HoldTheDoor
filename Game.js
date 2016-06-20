@@ -1,6 +1,3 @@
-var GameModel = require('./models/Game.js');
-var www = require('./bin/www');
-
 function Game(lines, id) {
     this.id = id;
     var story = [""];
@@ -10,8 +7,11 @@ function Game(lines, id) {
     var turnDuration = 120 * 1000 * 3;
     var that = this;
     var flow;
-    var first = true;
     sockets[id] = {};
+
+    /**
+     * loads a game from i'ts db repr;
+     */
 
     this.updatefromDB = function (dbGame) {
         this.id = dbGame.id;
@@ -20,56 +20,46 @@ function Game(lines, id) {
         this.players = dbGame.players;
         this.linesLeft = dbGame.turnsLeft;
     };
+    /**
+     * delete references to the game and inform all players of game end and  resulting story;
+     */
 
     function endGame() {
         delete activeGames[that.id];
         // Find and delete this Game from the DB
-        var st = fullStory();
-        io.sockets.in(that.id).emit('Game End', {story: st});
-        dataBase.findOne(that.id, function (err, gameFound) {
-            if (err || gameFound == null)  return console.log(err);
-            gameFound.remove(function (err) {
-                if (err) return console.log(err);
-                console.log('Game successfully deleted!');
-            });
-        });
+        io.sockets.in(that.id).emit('Game End', {story: fullStory()});
+        dataBase.removeFromDB(that);
     }
+
+    /**
+     * advance to the game's next turn
+     * @returns {*}
+     */
+
     function advance() {
         if (done() || that.players.length === 0) {
             endGame();
         }
         else {
-            console.log("pre-next", that.players.length);
             var next = nextPlayer();
-            console.log("next", next);
-            if (sockets[that.id][that.players[next]] == null) {
-                console.log('next crap', that.id, that.players[next]);
-                return endGame();
-
-            }//no more players in game
+            if (sockets[that.id][that.players[next]] == null) return endGame();//no more players in game
             else turn = next;
 
-            console.log('id: ' + that.id);
-            dataBase.findOne(that.id, function (err, gameFound) {
-                if (err) return console.log(err);
-                //console.log(gameFound);
-                gameFound.turnsLeft = that.linesLeft;
-                gameFound.curTurn = turn;
-                gameFound.story = story;
-                gameFound.save(function (err) {
-                    if (err) return console.log(err);
-                    console.log('Game successfully updated!');
-                });
-            });
+            dataBase.updateFromGame(that, turn, story);
+
             io.sockets.in(that.id).emit("turn", {turn: turn});
             if (sockets[that.id][that.players[turn]] != null) {
                 console.log('start!')
                 sockets[that.id][that.players[turn]].emit("start turn", {lastSentence: story[story.length - 1]});
             }
+
             flow = setTimeout(advance, turnDuration);
         }
     }
 
+    /**
+     * process a users submission
+     */
     this.submitSentence = function (sentence, player) {
         //console.assert(this.playerNum > 2, {message: "less then 2 players", playerNumber: this.playerNum});
         console.log('submit', player, that.players[turn]);
@@ -86,9 +76,10 @@ function Game(lines, id) {
     this.addPlayer = (player)=> {
         that.players.push(player);
         if (that.players.length == 1) {
-            advance();
+            advance();//start game
         }
         else {
+            //update new player of current player
             sockets[that.id][player].emit('turn', {turn: turn});
         }
     };
@@ -108,11 +99,14 @@ function Game(lines, id) {
         return that.linesLeft == 0;
     }
 
-    var fullStory = () => {
+    function fullStory() {
         return story.join("\n")
     };
 
-
+    /**
+     * find next available player
+     * @returns {number}
+     */
     function nextPlayer() {
         var next = turn;
         do {

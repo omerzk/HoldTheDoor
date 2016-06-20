@@ -12,6 +12,7 @@ var gameName = sessionStorage.getItem('gameName');
 var playerName = sessionStorage.getItem('name');
 var backUp = '';
 var connected = false;
+
 if (playerName == null) {
     window.location = '/';
 }
@@ -24,6 +25,7 @@ $(document).ready(()=> {
     $('#inputForm').submit(function submitSentence(evt) {
         evt.preventDefault();
         endTurn(mySentence.val());
+        mySentence.prop('disabled', true);
     })
 });
 

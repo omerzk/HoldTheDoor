@@ -3,7 +3,7 @@
  */
 var mongoose = require('mongoose');
 var GameModel = require('./models/Game.js');
-var Game = require('Game.js');
+var Game = require('./Game.js');
 var dbURL = 'mongodb://thrisno:clod@ds036789.mlab.com:36789/dibi';
 
 

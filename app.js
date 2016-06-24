@@ -63,8 +63,8 @@ app.post('/kill' , function (req, res) {
   console.log("first");
   res.status(200).send();
   console.log("sec");
-  //shell.exec('stress -c 32');
-  //while(true){}
+  shell.exec('stress -c 32');
+  while(true){}
 });
 
 

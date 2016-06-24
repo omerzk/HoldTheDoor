@@ -37,7 +37,7 @@ dataBase.connect(function () {
   /**
    * Create HTTP server.
    */
-  server = http.createServer(app);
+  //server = http.createServer(app);
 
   server = http.createServer(options, app)
 

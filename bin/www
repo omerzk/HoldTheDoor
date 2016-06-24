@@ -25,6 +25,33 @@ var options = {
 };
 console.log(options);
 
+///////////////////
+
+var LEX = require('letsencrypt-express');
+
+var lex = LEX.create({
+  configDir: '/etc/letsencrypt/live/sentgame.tk/fullchain.pem', //require('os').homedir() + '/letsencrypt/etc',
+  approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
+    // Note: this is the place to check your database to get the user associated with this domain
+    cb(null, {
+      domains: ['sentgame.tk'],
+      email: 'rom.cohen90@gmail.com',
+      agreeTos: true
+    });
+  }
+});
+
+
+/**
+ * Create HTTP server.
+ */
+server = http.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex ,app));
+
+///////////////////
+
+
+
+
 //
 //var dbReady = false;
 
@@ -40,7 +67,7 @@ dataBase.connect(function () {
    */
   //server = http.createServer(app);
 
-  server = http.createServer(options, app)
+  //server = http.createServer(options, app)
 
 });
 

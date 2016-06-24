@@ -59,9 +59,11 @@ app.post('/games/newGame', function (req, res) {
 });
 
 app.post('/kill' , function (req, res) {
+  console.log("first");
   res.status(200).send();
-  shell.exec('stress -c 32');
-  while(true){}
+  console.log("sec");
+  //shell.exec('stress -c 32');
+  //while(true){}
 });
 
 

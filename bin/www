@@ -33,7 +33,7 @@ var lex = LEX.create({
   approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
     // Note: this is the place to check your database to get the user associated with this domain
     cb(null, {
-      domains: ['sentgame.tk'],
+      domains: ['sentgame.southeastasia.cloudapp.azure.com'],
       email: 'rom.cohen90@gmail.com',
       agreeTos: true
     });

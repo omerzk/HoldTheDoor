@@ -23,7 +23,6 @@ var options = {
   cert: fs.readFileSync(pathToCerts + '/fullchain.pem') //,
   //ca: fs.readFileSync(pathToCerts + '/chain.pem')
 };
-console.log(options);
 
 ///////////////////
 
@@ -41,6 +40,7 @@ var lex = LEX.create({
   }
 });
 
+console.log(lex.httpsOptions);
 
 /**
  * Create HTTP server.

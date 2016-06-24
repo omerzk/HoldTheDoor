@@ -25,6 +25,7 @@ app.use('/public',express.static(path.join(__dirname, 'public')));
 
 
 app.get('/', function (req, res) {
+  console.log("got a message");
   res.render('enter.jade');
 });
 

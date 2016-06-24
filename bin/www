@@ -30,7 +30,7 @@ console.log(options);
 var LEX = require('letsencrypt-express');
 
 var lex = LEX.create({
-  configDir: '/etc/letsencrypt/live/sentgame.tk/fullchain.pem', //require('os').homedir() + '/letsencrypt/etc',
+  configDir: '/etc/letsencrypt/live/sentgame.tk', //require('os').homedir() + '/letsencrypt/etc',
   approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
     // Note: this is the place to check your database to get the user associated with this domain
     cb(null, {

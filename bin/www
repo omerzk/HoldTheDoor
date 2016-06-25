@@ -7,67 +7,32 @@
 var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
 var http = require('http');
-var https = require('https');
 var fs = require('fs');
 var DB = require('../DB.js');
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '80');
+var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 var server;
 // Create options for encryption
-var pathToCerts = '/etc/letsencrypt/live/sentgame.tk';
-var options = {
-  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
-  cert: fs.readFileSync(pathToCerts + '/fullchain.pem') //,
-  //ca: fs.readFileSync(pathToCerts + '/chain.pem')
-};
-
-///////////////////
-
-var LEX = require('letsencrypt-express');
-
-
-
-///////////////////
-
-
-
+var pathToCerts = 'etc/letsencrypt/live/sentgame.tk';
+//var options = {
+//  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
+//  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
+//  ca: fs.readFileSync(pathToCerts + '/chain.pem')
+//};
 
 
 //Init remote DB
 dataBase = new DB();
 dataBase.init(function () {
-  console.log("DB ready")
+  console.log("DB ready");
   //load db data
   dataBase.fillGames(Start);
-  console.log("post db");
-
-  /**
-   * Create HTTP server.
-   */
-  var lex = LEX.create({
-    configDir: '/etc/letsencrypt/', //require('os').homedir() + '/letsencrypt/etc',
-    approveRegistration: function (hostname, cb) {
-      cb(null, {
-        domains: ['sentgame.southeastasia.cloudapp.azure.com'],
-        email: 'rom.cohen90@gmail.com',
-        agreeTos: true
-      });
-    }
-  });
-
-  console.log(lex.httpsOptions);
-
-  /**
-   * Create HTTP server.
-   */
-  server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
-  //server = http.createServer(app);
-
-  //server = http.createServer(options, app)
+  //create http server
+  server = http.createServer(app);
 
 });
 
@@ -134,9 +99,6 @@ function onListening() {
 }
 
 function Start() {
-  //create http server
-  //server = http.createServer(app);
-  server = https.createServer(options, app);
   io = require('socket.io')(server);
 
   server.listen(port);

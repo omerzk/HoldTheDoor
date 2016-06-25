@@ -49,9 +49,8 @@ dataBase.init(function () {
    * Create HTTP server.
    */
   var lex = LEX.create({
-    configDir: '/etc/letsencrypt/live/sentgame.tk', //require('os').homedir() + '/letsencrypt/etc',
-    approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
-      // Note: this is the place to check your database to get the user associated with this domain
+    configDir: '/etc/letsencrypt/', //require('os').homedir() + '/letsencrypt/etc',
+    approveRegistration: function (hostname, cb) {
       cb(null, {
         domains: ['sentgame.southeastasia.cloudapp.azure.com'],
         email: 'rom.cohen90@gmail.com',
@@ -65,7 +64,7 @@ dataBase.init(function () {
   /**
    * Create HTTP server.
    */
-  server = http.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex ,app));
+  server = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
   //server = http.createServer(app);
 
   //server = http.createServer(options, app)

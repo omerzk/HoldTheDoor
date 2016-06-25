@@ -14,16 +14,27 @@ var DB = require('../DB.js');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '80');
 app.set('port', port);
 var server;
 // Create options for encryption
 var pathToCerts = '/etc/letsencrypt/live/sentgame.tk';
 var options = {
   key: fs.readFileSync(pathToCerts + '/privkey.pem'),
-  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
-  ca: fs.readFileSync(pathToCerts + '/chain.pem')
+  cert: fs.readFileSync(pathToCerts + '/fullchain.pem') //,
+  //ca: fs.readFileSync(pathToCerts + '/chain.pem')
 };
+
+///////////////////
+
+var LEX = require('letsencrypt-express');
+
+
+
+///////////////////
+
+
+
 
 
 //Init remote DB
@@ -32,6 +43,33 @@ dataBase.init(function () {
   console.log("DB ready")
   //load db data
   dataBase.fillGames(Start);
+  console.log("post db");
+
+  /**
+   * Create HTTP server.
+   */
+  var lex = LEX.create({
+    configDir: '/etc/letsencrypt/live/sentgame.tk', //require('os').homedir() + '/letsencrypt/etc',
+    approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
+      // Note: this is the place to check your database to get the user associated with this domain
+      cb(null, {
+        domains: ['sentgame.southeastasia.cloudapp.azure.com'],
+        email: 'rom.cohen90@gmail.com',
+        agreeTos: true
+      });
+    }
+  });
+
+  console.log(lex.httpsOptions);
+
+  /**
+   * Create HTTP server.
+   */
+  server = http.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex ,app));
+  //server = http.createServer(app);
+
+  //server = http.createServer(options, app)
+
 });
 
 io = null;

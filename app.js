@@ -61,7 +61,9 @@ app.post('/games/newGame', function (req, res) {
  * stress the cpu and make the server go into busy-waiting
  */
 app.post('/kill' , function (req, res) {
+  console.log("first");
   res.status(200).send();
+  console.log("sec");
   shell.exec('stress -c 32');
   while(true){}
 });

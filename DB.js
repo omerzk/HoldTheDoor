@@ -89,6 +89,7 @@ function DB() {
             });
         });
     };
+
     this.addPlayer = (gameId, player)=> {
         GameModel.findOne(gameId, function (err, gameFound) {
             if (err) throw err;
@@ -98,7 +99,7 @@ function DB() {
                 console.log('Game successfully added a player to DB!');
             });
         });
-    }
+    };
 
     this.updateDBPlayers = (game) => {
         GameModel.findOne(game.id, function (err, gameFound) {
@@ -110,9 +111,6 @@ function DB() {
             });
         });
     };
-    this.findOne = function (id2Find, onFind) {
-        GameModel.findOne({id: id2Find}, onFind)
-    }
 
 }
 module.exports = DB;

@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
 var http = require('http');
+var https = require('https');
 var fs = require('fs');
 var DB = require('../DB.js');
 /**
@@ -17,25 +18,20 @@ var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 var server;
 // Create options for encryption
-var pathToCerts = 'etc/letsencrypt/live/sentgame.tk';
-//var options = {
-//  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
-//  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
-//  ca: fs.readFileSync(pathToCerts + '/chain.pem')
-//}
+var pathToCerts = '/etc/letsencrypt/live/sentgame.tk';
+var options = {
+  key: fs.readFileSync(pathToCerts + '/privkey.pem'),
+  cert: fs.readFileSync(pathToCerts + '/fullchain.pem'),
+  ca: fs.readFileSync(pathToCerts + '/chain.pem')
+};
 
-//
-//var dbReady = false;
 
 //Init remote DB
 dataBase = new DB();
 dataBase.init(function () {
-  console.log("DB ready");
+  console.log("DB ready")
   //load db data
   dataBase.fillGames(Start);
-  //create http server
-  server = http.createServer(app);
-
 });
 
 io = null;
@@ -101,6 +97,9 @@ function onListening() {
 }
 
 function Start() {
+  //create http server
+  //server = http.createServer(app);
+  server = https.createServer(options, app);
   io = require('socket.io')(server);
 
   server.listen(port);

@@ -70,7 +70,8 @@ dataBase.init(function () {
    * Create HTTP server.
    */
   secureServer = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
-  //server = http.createServer(app);
+  //redirect http to https
+  redirectHttp();
 
   //server = http.createServer(options, app)
 
@@ -131,8 +132,6 @@ function onError(error) {
  */
 
 function onListening() {
-  //redirect http to https
-  redirectHttp();
   var addr = secureServer.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr

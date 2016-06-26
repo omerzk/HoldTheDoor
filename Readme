@@ -16,6 +16,8 @@ Implementation:
                     (https://twitter.com/slexaxton/status/398016989429374977)
 
         React.js - Since we have a user facing app react made it quite easy to update DOM elements dynamically.
+        
+        letsencrypt-express - a wrappper for let's-encrypt made for an express.js server.
 
     Details:
         Auth:
@@ -31,7 +33,8 @@ Implementation:
             we chose not to use sockets for the to minimize the number of concurrent connections the server has to maintain(=>Money/Load).
             instead we used a RESTful protocol.
 
-            we've built additional classes(Game,DB,Clock) to instill some modularity.
+            we've built additional classes(Game, DB, Clock) to instill some modularity.
+            we've redirected http(Using a http server listening on port 80) traffic to https. 
 
     Kill:
         we've made an endpoint (http://sentgame.southeastasia.cloudapp.azure.com/kill)
@@ -47,10 +50,6 @@ Implementation:
         on the other hand since we used a remote db our data would persist azure :)
 
         an obvious alternative is using a "local" db which would remove the communication concern.
-
-
-    other things:
-        we managed to generate a certificate using let'sEncrypt but we've failed to configure it
 
 
 

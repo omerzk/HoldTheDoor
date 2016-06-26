@@ -1,7 +1,7 @@
 /**
  * Created by omer on 15/06/2016.
  */
-var serverAddr = 'localhost:3000';
+var serverAddr = 'https://sentgame.tk';
 var socket = io.connect(serverAddr);
 
 var mySentence = $('#mySentence');

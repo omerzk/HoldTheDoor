@@ -45,7 +45,7 @@ dataBase.init(function () {
   //load db data
   dataBase.fillGames(Start);
   //create http server
-  server = http.createServer(app);
+  //server = http.createServer(app);
 
   /**
    * Create HTTP server.

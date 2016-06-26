@@ -71,7 +71,7 @@ dataBase.init(function () {
    */
   secureServer = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
   //redirect http to https
-  redirectHttp();
+  redirectHttp(lex);
 
   //server = http.createServer(options, app)
 
@@ -195,7 +195,7 @@ function Start() {
   });
 }
 
-function redirectHttp() {
+function redirectHttp(lex) {
   http.createServer(LEX.createAcmeResponder(lex, function redirectHttps(req, res) {
     res.setHeader('Location', 'https://' + req.headers.host + req.url);
     res.statusCode = 302;

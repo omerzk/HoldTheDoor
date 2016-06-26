@@ -6,7 +6,9 @@
 
 var app = require('../app');
 var debug = require('debug')('HoldTheDoor:server');
-var http = require('https');
+var https = require('https');
+var http = require('http');
+
 var fs = require('fs');
 var DB = require('../DB.js');
 /**
@@ -15,7 +17,7 @@ var DB = require('../DB.js');
 
 var port = normalizePort(process.env.PORT || '443');
 app.set('port', port);
-var server;
+var secureServer;
 // Create options for encryption
 var pathToCerts = '/etc/letsencrypt/live/sentgame.tk';
 var options = {
@@ -67,7 +69,7 @@ dataBase.init(function () {
   /**
    * Create HTTP server.
    */
-  server = http.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex ,app));
+  secureServer = https.createServer(lex.httpsOptions, LEX.createAcmeResponder(lex, app));
   //server = http.createServer(app);
 
   //server = http.createServer(options, app)
@@ -129,7 +131,9 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
+  //redirect http to https
+  redirectHttp();
+  var addr = secureServer.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
@@ -137,12 +141,12 @@ function onListening() {
 }
 
 function Start() {
-  io = require('socket.io')(server);
+  io = require('socket.io')(secureServer);
 
-  server.listen(port);
+  secureServer.listen(port);
 
-  server.on('error', onError);
-  server.on('listening', onListening);
+  secureServer.on('error', onError);
+  secureServer.on('listening', onListening);
 
 
   io.sockets.on('connection', (socket) => {
@@ -192,4 +196,10 @@ function Start() {
   });
 }
 
-module.exports = dataBase;
+function redirectHttp() {
+  http.createServer(LEX.createAcmeResponder(lex, function redirectHttps(req, res) {
+    res.setHeader('Location', 'https://' + req.headers.host + req.url);
+    res.statusCode = 302;
+    res.end('<!-- Hello Developer Person! Please use HTTPS instead -->');
+  })).listen(80);
+}
